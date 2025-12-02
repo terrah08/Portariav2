@@ -138,21 +138,21 @@
    Dados / Configurações
    --------------------------- */
 const PRICE_TYPES = [
-  { id: "20", label: "Dinheiro- R$20", price: 20, people: 1, kind: "Dinheiro" },
-  { id: "30", label: "Dinheiro- R$30", price: 30, people: 1, kind: "Dinheiro" },
-  { id: "50", label: "Dinheiro- R$50", price: 50, people: 2, kind: "Dinheiro" },
+  { id: "20", label: "Dinheiro R$20", price: 20, people: 1, kind: "Dinheiro" },
+  { id: "30", label: "Dinheiro R$30", price: 30, people: 1, kind: "Dinheiro" },
+  { id: "50", label: "Dinheiro R$50", price: 50, people: 2, kind: "Dinheiro" },
 
-  { id: "20_credito", label: "Crédito- R$20", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_credito", label: "Crédito- R$30", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_credito", label: "Crédito- R$50", price: 50, people: 2, kind: "Cartão" },
+  { id: "20_credito", label: "Crédito R$20", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_credito", label: "Crédito R$30", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_credito", label: "Crédito R$50", price: 50, people: 2, kind: "Cartão" },
 
-  { id: "20_debito", label: "Débito- R$20", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_debito", label: "Débito- R$30", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_debito", label: "Débito- R$50", price: 50, people: 2, kind: "Cartão" },
+  { id: "20_debito", label: "Débito R$20", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_debito", label: "Débito R$30", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_debito", label: "Débito R$50", price: 50, people: 2, kind: "Cartão" },
 
-  { id: "20_pix", label: "Pix- R$20", price: 20, people: 1, kind: "Pix" },
-  { id: "30_pix", label: "Pix- R$30", price: 30, people: 1, kind: "Pix" },
-  { id: "50_pix", label: "Pix- R$50", price: 50, people: 2, kind: "Pix" },
+  { id: "20_pix", label: "Pix R$20", price: 20, people: 1, kind: "Pix" },
+  { id: "30_pix", label: "Pix R$30", price: 30, people: 1, kind: "Pix" },
+  { id: "50_pix", label: "Pix R$50", price: 50, people: 2, kind: "Pix" },
 
   { id: "free", label: "Lista (Free)", price: 0, people: 1, kind: "Gratuidade" },
   { id: "militar", label: "Militar", price: 0, people: 1, kind: "Gratuidade" },
