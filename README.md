@@ -75,7 +75,7 @@
               <div id="totalPeople" class="text-2xl font-bold">0</div>
             </div>
             <div class="bg-gray-100 p-3 rounded-lg text-center">
-              <div class="text-xs text-gray-500">Arrecadado</div>
+              <div class="text-xs text-gray-500">Valor Total</div>
               <div id="totalCollected" class="text-2xl font-bold">R$ 0,00</div>
             </div>
           </div>
@@ -135,7 +135,7 @@
 
 <script>
 /* ---------------------------
-   TIPOS COM (1p) / (2p) REMOVIDOS DO TEXTO
+   TIPOS SEM TEXTO (1p) / (2p)
    --------------------------- */
 const PRICE_TYPES = [
   { id: "20", label: "Dinheiro - R$20", price: 20, people: 1, kind: "Dinheiro" },
@@ -159,14 +159,16 @@ const PRICE_TYPES = [
   { id: "aniversario", label: "Aniversário", price: 0, people: 1, kind: "Gratuidade" }
 ];
 
-/* ---------------------------
-   GERAR BOTÕES SEM (1p) / (2p)
-   --------------------------- */
+/* -------------------------------------------
+   BOTÕES — SOMENTE DINHEIRO COM TEXT-XS
+   ------------------------------------------- */
 PRICE_TYPES.forEach(p => {
   const b = document.createElement('button');
+
   b.className = 'px-3 py-2 rounded text-white text-sm shadow';
 
   if (p.kind === "Dinheiro") {
+    b.classList.add("text-xs"); // 🔥 AJUSTE PARA CABER
     b.classList.add("bg-green-600", "hover:bg-green-700");
   } 
   else if (p.kind === "Crédito" || p.kind === "Débito") {
@@ -179,13 +181,13 @@ PRICE_TYPES.forEach(p => {
     b.classList.add("bg-slate-400", "hover:bg-slate-500");
   }
 
-  b.textContent = p.label;   // 🔥 só o nome — SEM (1p)
+  b.textContent = p.label;
   b.onclick = () => addEntry(p.id);
   buttonsContainer.appendChild(b);
 });
 
 /* ---------------------------
-   RESTANTE DO SISTEMA (SEM ALTERAÇÕES)
+   RESTANTE DO SISTEMA IGUAL
    --------------------------- */
 
 const todayKey = () => new Date().toISOString().slice(0,10);
@@ -231,7 +233,8 @@ function renderEntries() {
         <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="editEntry(${e.id})">Editar</button>
         <button class="px-2 py-1 bg-red-500 text-white rounded text-xs" onclick="deleteEntry(${e.id})">Excluir</button>
       </td>
-    </tr>`).join('') : `<tr><td colspan="6" class="text-center p-4 text-gray-400">Nenhum registro</td></tr>`;
+    </tr>`).join('') :
+    `<tr><td colspan="6" class="text-center p-4 text-gray-400">Nenhum registro</td></tr>`;
 
   const totals = entries.reduce((acc, e) => {
     acc.people += e.people;
@@ -246,6 +249,7 @@ function renderEntries() {
 function addEntry(id) {
   const t = PRICE_TYPES.find(p => p.id === id);
   if (!t) return;
+
   entries.unshift({
     id: Date.now(),
     timestamp: new Date().toISOString(),
@@ -255,6 +259,7 @@ function addEntry(id) {
     kind: t.kind,
     note: noteEl.value.trim()
   });
+
   noteEl.value = '';
   saveEntries();
   renderEntries();
@@ -270,10 +275,13 @@ function deleteEntry(id) {
 function editEntry(id) {
   const item = entries.find(x => x.id === id);
   if (!item) return;
+
   const newNote = prompt('Editar anotação:', item.note || '');
   if (newNote === null) return;
+
   const newPrice = prompt('Editar preço (somente números):', item.price);
   if (newPrice === null) return;
+
   const newPeople = prompt('Editar número de pessoas:', item.people);
   if (newPeople === null) return;
 
@@ -341,7 +349,7 @@ function generateReportVisual() {
   reportSummary.innerHTML = `
     <div class="text-sm">
       <p><strong>Data:</strong> ${currentDate}</p>
-      <p><strong>Total arrecadado:</strong> R$ ${totals.collected.toFixed(2)}</p>
+      <p><strong>Valor Total:</strong> R$ ${totals.collected.toFixed(2)}</p>
       <p><strong>Total de pessoas:</strong> ${totals.people}</p>
       <p><strong>Primeira entrada:</strong> ${first}</p>
       <p><strong>Última entrada:</strong> ${last}</p>
@@ -378,6 +386,7 @@ document.getElementById('downloadPdf').addEventListener('click', async () => {
   const panel = document.querySelector('#reportPanel');
   const closeBtn = document.getElementById('closeReport');
   const downloadBtn = document.getElementById('downloadPdf');
+
   closeBtn.style.display = 'none';
   downloadBtn.style.display = 'none';
 
