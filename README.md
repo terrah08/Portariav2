@@ -47,17 +47,11 @@
       <section class="bg-white p-4 rounded-xl shadow col-span-1">
         <h2 class="font-semibold mb-2">Registrar entrada</h2>
 
-        <!-- 🔥 Campo de nota removido completamente -->
-
         <div id="buttonsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3"></div>
 
         <div class="flex gap-2">
           <button id="exportCSV" class="btn bg-indigo-600 hover:bg-indigo-700 small">Exportar CSV</button>
           <button id="generateReport" class="btn bg-blue-600 hover:bg-blue-700 small">Gerar Relatório (PDF)</button>
-        </div>
-
-        <div class="mt-4 text-sm text-gray-600">
-          
         </div>
       </section>
 
@@ -166,7 +160,7 @@ PRICE_TYPES.forEach(p => {
     b.classList.add("bg-green-600", "hover:bg-green-700");
   } else if (p.kind === "Crédito") {
     b.classList.add("bg-yellow-400", "hover:bg-yellow-500", "text-black");
-} else if (p.kind === "Débito") {
+  } else if (p.kind === "Débito") {
     b.classList.add("bg-blue-600", "hover:bg-blue-700");
   } else if (p.kind === "Pix") {
     b.classList.add("bg-gray-600", "hover:bg-gray-700");
@@ -272,7 +266,7 @@ function deleteEntry(id) {
 }
 
 /* ---------------------------
-   EDIT ENTRY (sem nota)
+   EDIT ENTRY
    --------------------------- */
 function editEntry(id) {
   const item = entries.find(x => x.id === id);
@@ -292,7 +286,7 @@ function editEntry(id) {
 }
 
 /* ---------------------------
-   CSV (sem nota)
+   CSV
    --------------------------- */
 document.getElementById('exportCSV').addEventListener('click', () => {
   const headers = ['timestamp','type','price','people'];
@@ -429,14 +423,12 @@ document.getElementById('downloadPdf').addEventListener('click', async () => {
   const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
   pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
-  pdf.setFontSize(10);
-  pdf.text(`Relatório gerado: ${new Date().toLocaleString()}`, margin, pdf.internal.pageSize.getHeight() - 10);
 
   pdf.save(`relatorio_portaria_${currentDate}.pdf`);
 });
 
 /* ---------------------------
-   DATA CHANGE
+   ALTERAR DATA
    --------------------------- */
 currentDateEl.onchange = e => {
   currentDate = e.target.value;
