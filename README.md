@@ -165,7 +165,9 @@ PRICE_TYPES.forEach(p => {
   if (p.kind === "Dinheiro") {
     b.classList.add("text-xs");
     b.classList.add("bg-green-600", "hover:bg-green-700");
-  } else if (p.kind === "Crédito" || p.kind === "Débito") {
+  } else if (p.kind === "Crédito") {
+    b.classList.add("bg-yellow-400", "hover:bg-yellow-500", "text-black");
+} else if (p.kind === "Débito") {
     b.classList.add("bg-blue-600", "hover:bg-blue-700");
   } else if (p.kind === "Pix") {
     b.classList.add("bg-gray-600", "hover:bg-gray-700");
