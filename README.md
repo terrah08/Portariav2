@@ -34,9 +34,12 @@
             cursor: pointer;
             font-weight: bold;
         }
-        .vip { background: #d4af37; }
-        .normal { background: #4CAF50; color: white; }
-        .free { background: #2196F3; color: white; }
+
+        /* NOVAS CORES PEDIDAS */
+        .dinheiro { background: #4CAF50; color: white; } /* verde */
+        .debito { background: #2196F3; color: white; }   /* azul */
+        .credito { background: #2196F3; color: white; }  /* azul */
+        .pix { background: #9E9E9E; color: white; }      /* cinza */
 
         #entradasDia {
             margin-top: 20px;
@@ -64,9 +67,11 @@
 <div class="container">
     <h2>Registro de Entradas</h2>
 
-    <button class="btn vip" onclick="registrarEntrada('VIP', 100)">Entrada VIP - R$100</button>
-    <button class="btn normal" onclick="registrarEntrada('Normal', 50)">Entrada Normal - R$50</button>
-    <button class="btn free" onclick="registrarEntrada('Gratuita', 0)">Entrada Gratuita</button>
+    <!-- AQUI ESTÃO AS NOVAS CORES -->
+    <button class="btn dinheiro" onclick="registrarEntrada('Dinheiro', 100)">Dinheiro - R$100</button>
+    <button class="btn debito" onclick="registrarEntrada('Débito', 50)">Débito - R$50</button>
+    <button class="btn credito" onclick="registrarEntrada('Crédito', 50)">Crédito - R$50</button>
+    <button class="btn pix" onclick="registrarEntrada('Pix', 0)">Pix - R$0</button>
 
     <h3>Entradas do dia</h3>
     <div id="entradasDia">
@@ -82,7 +87,6 @@
     let totalPessoas = 0;
     let totalValor = 0;
 
-    // Conversor para Base64
     function toBase64(texto) {
         return btoa(unescape(encodeURIComponent(texto)));
     }
