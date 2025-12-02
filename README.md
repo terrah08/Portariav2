@@ -15,13 +15,13 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-  .btn { @apply px-4 py-3 rounded-2xl text-white font-semibold shadow-md; }
+  .btn { @apply px-3 py-2 rounded-lg text-white shadow-sm; }
   .small { font-size: .85rem; }
   .table-fixed td, .table-fixed th { vertical-align: middle; }
 </style>
 </head>
-
 <body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
   <div class="max-w-6xl mx-auto">
 
     <!-- Header -->
@@ -35,7 +35,7 @@
 
       <div class="flex gap-3 items-center">
         <label class="small text-gray-600">Dia:</label>
-        <input id="currentDate" type="date" class="border rounded-lg px-3 py-2 shadow-sm" />
+        <input id="currentDate" type="date" class="border rounded px-2 py-1" />
         <button id="saveDay" class="btn bg-green-600 hover:bg-green-700 small">Salvar</button>
         <button id="resetDay" class="btn bg-red-600 hover:bg-red-700 small">Resetar</button>
       </div>
@@ -44,26 +44,32 @@
     <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- Left: Registrar entrada -->
-      <section class="bg-white p-4 rounded-2xl shadow col-span-1">
+      <section class="bg-white p-4 rounded-xl shadow col-span-1">
         <h2 class="font-semibold mb-2">Registrar entrada</h2>
 
-        <div id="buttonsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3"></div>
+        <!-- 🔥 Campo de nota removido completamente -->
+
+        <div id="buttonsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3"></div>
 
         <div class="flex gap-2">
           <button id="exportCSV" class="btn bg-indigo-600 hover:bg-indigo-700 small">Exportar CSV</button>
           <button id="generateReport" class="btn bg-blue-600 hover:bg-blue-700 small">Gerar Relatório (PDF)</button>
         </div>
+
+        <div class="mt-4 text-sm text-gray-600">
+          
+        </div>
       </section>
 
       <!-- Right top: Totais -->
-      <section class="bg-white p-4 rounded-2xl shadow col-span-2">
+      <section class="bg-white p-4 rounded-xl shadow col-span-2">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex gap-4">
-            <div class="bg-gray-100 p-4 rounded-xl text-center shadow-sm">
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
               <div class="text-xs text-gray-500">Pessoas</div>
               <div id="totalPeople" class="text-2xl font-bold">0</div>
             </div>
-            <div class="bg-gray-100 p-4 rounded-xl text-center shadow-sm">
+            <div class="bg-gray-100 p-3 rounded-lg text-center">
               <div class="text-xs text-gray-500">Valor Total</div>
               <div id="totalCollected" class="text-2xl font-bold">R$ 0,00</div>
             </div>
@@ -93,7 +99,7 @@
       </section>
 
       <!-- Report Panel -->
-      <section id="reportPanel" class="bg-white p-4 rounded-2xl shadow col-span-3 hidden">
+      <section id="reportPanel" class="bg-white p-4 rounded-xl shadow col-span-3 hidden">
         <div class="flex items-center justify-between mb-4 gap-4">
           <h2 class="font-semibold">Relatório Profissional - Resumo do Dia</h2>
           <div class="flex gap-2">
@@ -153,13 +159,14 @@ const PRICE_TYPES = [
    --------------------------- */
 PRICE_TYPES.forEach(p => {
   const b = document.createElement('button');
-  b.className = 'px-3 py-2 rounded text-white text-sm shadow whitespace-nowrap';
+  b.className = 'px-3 py-2 rounded text-white text-sm shadow';
 
   if (p.kind === "Dinheiro") {
+    b.classList.add("text-xs");
     b.classList.add("bg-green-600", "hover:bg-green-700");
   } else if (p.kind === "Crédito") {
     b.classList.add("bg-yellow-400", "hover:bg-yellow-500", "text-black");
-  } else if (p.kind === "Débito") {
+} else if (p.kind === "Débito") {
     b.classList.add("bg-blue-600", "hover:bg-blue-700");
   } else if (p.kind === "Pix") {
     b.classList.add("bg-gray-600", "hover:bg-gray-700");
@@ -218,8 +225,8 @@ function renderEntries() {
       <td class="p-2 text-right">R$ ${e.price.toFixed(2)}</td>
       <td class="p-2 text-center">${e.people}</td>
       <td class="p-2 flex gap-2">
-        <button class="px-3 py-1 bg-yellow-500 text-white rounded-xl text-xs" onclick="editEntry(${e.id})">Editar</button>
-        <button class="px-3 py-1 bg-red-500 text-white rounded-xl text-xs" onclick="deleteEntry(${e.id})">Excluir</button>
+        <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="editEntry(${e.id})">Editar</button>
+        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs" onclick="deleteEntry(${e.id})">Excluir</button>
       </td>
     </tr>`).join('') :
     `<tr><td colspan="5" class="text-center p-4 text-gray-400">Nenhum registro</td></tr>`;
@@ -265,7 +272,7 @@ function deleteEntry(id) {
 }
 
 /* ---------------------------
-   EDIT ENTRY
+   EDIT ENTRY (sem nota)
    --------------------------- */
 function editEntry(id) {
   const item = entries.find(x => x.id === id);
@@ -285,7 +292,7 @@ function editEntry(id) {
 }
 
 /* ---------------------------
-   CSV
+   CSV (sem nota)
    --------------------------- */
 document.getElementById('exportCSV').addEventListener('click', () => {
   const headers = ['timestamp','type','price','people'];
@@ -422,12 +429,14 @@ document.getElementById('downloadPdf').addEventListener('click', async () => {
   const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
   pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+  pdf.setFontSize(10);
+  pdf.text(`Relatório gerado: ${new Date().toLocaleString()}`, margin, pdf.internal.pageSize.getHeight() - 10);
 
   pdf.save(`relatorio_portaria_${currentDate}.pdf`);
 });
 
 /* ---------------------------
-   ALTERAR DATA
+   DATA CHANGE
    --------------------------- */
 currentDateEl.onchange = e => {
   currentDate = e.target.value;
