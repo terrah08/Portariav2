@@ -153,7 +153,7 @@ const PRICE_TYPES = [
    --------------------------- */
 PRICE_TYPES.forEach(p => {
   const b = document.createElement('button');
-  b.className = 'px-4 py-3 rounded-2xl text-white text-sm shadow-md font-semibold';
+  b.className = 'px-3 py-2 rounded text-white text-sm shadow whitespace-nowrap';
 
   if (p.kind === "Dinheiro") {
     b.classList.add("bg-green-600", "hover:bg-green-700");
