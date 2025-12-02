@@ -33,7 +33,8 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
-         <div>
+        <div class="logo-placeholder">LOGO</div>
+        <div>
           <h1 class="text-2xl md:text-3xl font-extrabold">Portaria - Segunda Sem Leite 🥛🚫</h1>
           <div class="text-sm text-gray-500">Controle de entradas, arrecadação e relatórios profissionais</div>
         </div>
@@ -104,7 +105,7 @@
         </div>
       </section>
 
-      <!-- Report Panel (can be toggled) -->
+      <!-- Report Panel -->
       <section id="reportPanel" class="bg-white p-4 rounded-xl shadow col-span-3 hidden">
         <div class="flex items-center justify-between mb-4 gap-4">
           <h2 class="font-semibold">Relatório Profissional - Resumo do Dia</h2>
@@ -138,26 +139,57 @@
    Dados / Configurações
    --------------------------- */
 const PRICE_TYPES = [
-  { id: "20", label: "Dinheiro R$20", price: 20, people: 1, kind: "Dinheiro" },
-  { id: "30", label: "Dinheiro R$30", price: 30, people: 1, kind: "Dinheiro" },
-  { id: "50", label: "Dinheiro R$50", price: 50, people: 2, kind: "Dinheiro" },
+  { id: "20", label: "Dinheiro - R$20", price: 20, people: 1, kind: "Dinheiro" },
+  { id: "30", label: "Dinheiro - R$30", price: 30, people: 1, kind: "Dinheiro" },
+  { id: "50", label: "Dinheiro - R$50", price: 50, people: 2, kind: "Dinheiro" },
 
-  { id: "20_credito", label: "Crédito R$20", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_credito", label: "Crédito R$30", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_credito", label: "Crédito R$50", price: 50, people: 2, kind: "Cartão" },
+  { id: "20_credito", label: "Crédito - R$20", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_credito", label: "Crédito - R$30", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_credito", label: "Crédito - R$50", price: 50, people: 2, kind: "Cartão" },
 
-  { id: "20_debito", label: "Débito R$20", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_debito", label: "Débito R$30", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_debito", label: "Débito R$50", price: 50, people: 2, kind: "Cartão" },
+  { id: "20_debito", label: "Débito - R$20", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_debito", label: "Débito - R$30", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_debito", label: "Débito - R$50", price: 50, people: 2, kind: "Cartão" },
 
-  { id: "20_pix", label: "Pix R$20", price: 20, people: 1, kind: "Pix" },
-  { id: "30_pix", label: "Pix R$30", price: 30, people: 1, kind: "Pix" },
-  { id: "50_pix", label: "Pix R$50", price: 50, people: 2, kind: "Pix" },
+  { id: "20_pix", label: "Pix - R$20", price: 20, people: 1, kind: "Pix" },
+  { id: "30_pix", label: "Pix - R$30", price: 30, people: 1, kind: "Pix" },
+  { id: "50_pix", label: "Pix - R$50", price: 50, people: 2, kind: "Pix" },
 
   { id: "free", label: "Lista (Free)", price: 0, people: 1, kind: "Gratuidade" },
   { id: "militar", label: "Militar", price: 0, people: 1, kind: "Gratuidade" },
   { id: "aniversario", label: "Aniversário", price: 0, people: 1, kind: "Gratuidade" }
 ];
+
+/* ---------------------------
+   Gerar botões com cores solicitadas
+   --------------------------- */
+PRICE_TYPES.forEach(p => {
+  const b = document.createElement('button');
+  b.className = 'px-3 py-2 rounded text-white text-sm shadow';
+
+  // 🔥 CORES EXATAS QUE VOCÊ PEDIU:
+  if (p.kind === "Dinheiro") {
+    b.classList.add("bg-green-600", "hover:bg-green-700");   // Verde
+  } 
+  else if (p.kind === "Cartão") {
+    b.classList.add("bg-blue-600", "hover:bg-blue-700");    // Azul
+  }
+  else if (p.kind === "Pix") {
+    b.classList.add("bg-gray-600", "hover:bg-gray-700");    // Cinza
+  }
+  else {
+    b.classList.add("bg-slate-400", "hover:bg-slate-500");  // Gratuidade (sem pedido de cor)
+  }
+
+  b.textContent = `${p.label} (${p.people}p)`;
+  b.onclick = () => addEntry(p.id);
+  buttonsContainer.appendChild(b);
+});
+
+
+/* ---------------------------
+   (todo o restante do seu código permanece idêntico)
+   --------------------------- */
 
 const todayKey = () => new Date().toISOString().slice(0,10);
 const storageKey = d => `portaria_${d}`;
@@ -165,10 +197,8 @@ const storageKey = d => `portaria_${d}`;
 let currentDate = todayKey();
 let entries = [];
 
-/* DOM */
 const currentDateEl = document.getElementById('currentDate');
 const noteEl = document.getElementById('note');
-const buttonsContainer = document.getElementById('buttonsContainer');
 const entriesBody = document.getElementById('entriesBody');
 const totalPeopleEl = document.getElementById('totalPeople');
 const totalCollectedEl = document.getElementById('totalCollected');
@@ -183,9 +213,6 @@ currentDateEl.value = currentDate;
 /* Chart instance placeholder */
 let reportChart = null;
 
-/* ---------------------------
-   Carregar / Salvar
-   --------------------------- */
 function loadEntries() {
   const raw = localStorage.getItem(storageKey(currentDate));
   entries = raw ? JSON.parse(raw) : [];
@@ -196,11 +223,7 @@ function saveEntries() {
   localStorage.setItem(storageKey(currentDate), JSON.stringify(entries));
 }
 
-/* ---------------------------
-   Render Tabela e totais
-   --------------------------- */
 function renderEntries() {
-  // linhas da tabela
   entriesBody.innerHTML = entries.length ? entries.map(e => `
     <tr class="border-t">
       <td class="p-2">${new Date(e.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
@@ -214,7 +237,6 @@ function renderEntries() {
       </td>
     </tr>`).join('') : `<tr><td colspan="6" class="text-center p-4 text-gray-400">Nenhum registro</td></tr>`;
 
-  // totais
   const totals = entries.reduce((acc, e) => {
     acc.people += e.people;
     acc.collected += e.price;
@@ -225,9 +247,6 @@ function renderEntries() {
   totalCollectedEl.textContent = `R$ ${totals.collected.toFixed(2)}`;
 }
 
-/* ---------------------------
-   Adicionar / Editar / Excluir
-   --------------------------- */
 function addEntry(id) {
   const t = PRICE_TYPES.find(p => p.id === id);
   if (!t) return;
@@ -255,9 +274,8 @@ function deleteEntry(id) {
 function editEntry(id) {
   const item = entries.find(x => x.id === id);
   if (!item) return;
-  // edição rápida: permitir editar nota, preço e pessoas por prompt
   const newNote = prompt('Editar anotação:', item.note || '');
-  if (newNote === null) return; // cancelou
+  if (newNote === null) return;
   const newPrice = prompt('Editar preço (somente números):', item.price);
   if (newPrice === null) return;
   const newPeople = prompt('Editar número de pessoas:', item.people);
@@ -271,20 +289,6 @@ function editEntry(id) {
   renderEntries();
 }
 
-/* ---------------------------
-   Gerar botões de entrada
-   --------------------------- */
-PRICE_TYPES.forEach(p => {
-  const b = document.createElement('button');
-  b.className = 'px-3 py-2 rounded bg-slate-100 hover:bg-slate-200 text-sm';
-  b.textContent = `${p.label} (${p.people}p)`;
-  b.onclick = () => addEntry(p.id);
-  buttonsContainer.appendChild(b);
-});
-
-/* ---------------------------
-   Export CSV
-   --------------------------- */
 document.getElementById('exportCSV').addEventListener('click', () => {
   const headers = ['timestamp','type','price','people','note'];
   const rows = entries.map(e => [e.timestamp, e.type, e.price, e.people, e.note || '']);
@@ -298,9 +302,6 @@ document.getElementById('exportCSV').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-/* ---------------------------
-   Reset / Save
-   --------------------------- */
 document.getElementById('resetDay').addEventListener('click', () => {
   if (!confirm('Deseja realmente limpar todos os registros do dia?')) return;
   entries = [];
@@ -310,9 +311,6 @@ document.getElementById('resetDay').addEventListener('click', () => {
 
 document.getElementById('saveDay').addEventListener('click', () => saveEntries());
 
-/* ---------------------------
-   Painel de Relatório
-   --------------------------- */
 document.getElementById('openReportPanel').addEventListener('click', () => {
   reportPanel.classList.remove('hidden');
   generateReportVisual();
@@ -321,24 +319,18 @@ document.getElementById('closeReport').addEventListener('click', () => {
   reportPanel.classList.add('hidden');
 });
 
-/* Toggle table visibility */
 document.getElementById('toggleTable').addEventListener('click', () => {
   const w = document.getElementById('tableWrapper');
   w.style.display = (w.style.display === 'none') ? 'block' : 'none';
 });
 
-/* ---------------------------
-   Gerar relatório (visual)
-   --------------------------- */
 function generateReportVisual() {
-  // resumo simples
   const totals = entries.reduce((a,e) => {
     a.people += e.people;
     a.collected += e.price;
     return a;
   }, { people:0, collected:0 });
 
-  // totals by kind
   const byKind = {};
   entries.forEach(e => {
     byKind[e.kind] = byKind[e.kind] || { count:0, collected:0 };
@@ -346,14 +338,10 @@ function generateReportVisual() {
     byKind[e.kind].collected += e.price;
   });
 
-  // first/last
   const first = entries.length ? new Date(entries[entries.length-1].timestamp).toLocaleTimeString() : '-';
   const last = entries.length ? new Date(entries[0].timestamp).toLocaleTimeString() : '-';
-
-  // média por pessoa
   const avg = totals.people ? (totals.collected / totals.people) : 0;
 
-  // preencher resumo
   reportSummary.innerHTML = `
     <div class="text-sm">
       <p><strong>Data:</strong> ${currentDate}</p>
@@ -365,7 +353,6 @@ function generateReportVisual() {
     </div>
   `;
 
-  // totais por forma
   let totalsHtml = '<div class="grid grid-cols-1 gap-2">';
   Object.keys(byKind).forEach(k => {
     totalsHtml += `<div class="flex justify-between"><div class="text-sm">${k}</div><div class="font-semibold">R$ ${byKind[k].collected.toFixed(2)} / ${byKind[k].count}p</div></div>`;
@@ -373,11 +360,9 @@ function generateReportVisual() {
   totalsHtml += '</div>';
   reportTotals.innerHTML = totalsHtml || '<div class="text-sm text-gray-500">Sem registros</div>';
 
-  // preparar dados do gráfico
   const labels = Object.keys(byKind);
   const data = labels.map(l => byKind[l].collected);
 
-  // destruir chart anterior se existir
   if (reportChart) { reportChart.destroy(); reportChart = null; }
 
   reportChart = new Chart(reportChartEl, {
@@ -393,54 +378,37 @@ function generateReportVisual() {
   });
 }
 
-/* ---------------------------
-   Exportar relatório como PDF (profissional)
-   --------------------------- */
 document.getElementById('downloadPdf').addEventListener('click', async () => {
-  // 1) renderizar área do relatório para canvas (html2canvas)
   const panel = document.querySelector('#reportPanel');
-  // remover botões temporariamente para cleaner output
   const closeBtn = document.getElementById('closeReport');
   const downloadBtn = document.getElementById('downloadPdf');
   closeBtn.style.display = 'none';
   downloadBtn.style.display = 'none';
 
-  // small timeout para garantir que chart esteja desenhado
   await new Promise(r => setTimeout(r, 200));
 
   const canvas = await html2canvas(panel, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
   const imgData = canvas.toDataURL('image/png');
 
-  // restaurar botões
   closeBtn.style.display = '';
   downloadBtn.style.display = '';
 
-  // 2) gerar PDF com jsPDF (tamanho A4 paisagem se preciso)
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 
-  // calcular dimensões
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-
-  // margens
   const margin = 20;
   const imgProps = pdf.getImageProperties(imgData);
   const imgWidth = pageWidth - margin*2;
   const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-  // se imagem maior que página -> ajustar e possivelmente dividir (aqui assumimos caber)
   pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
   pdf.setFontSize(10);
-  pdf.text(`Relatório gerado: ${new Date().toLocaleString()}`, margin, pageHeight - 10);
+  pdf.text(`Relatório gerado: ${new Date().toLocaleString()}`, margin, pdf.internal.pageSize.getHeight() - 10);
 
-  // 3) download
   pdf.save(`relatorio_portaria_${currentDate}.pdf`);
 });
 
-/* ---------------------------
-   Início
-   --------------------------- */
 currentDateEl.onchange = e => {
   currentDate = e.target.value;
   loadEntries();
@@ -453,7 +421,6 @@ function init() {
 }
 init();
 
-/* expose functions to inline onclick in generated HTML */
 window.deleteEntry = deleteEntry;
 window.editEntry = editEntry;
 window.addEntry = addEntry;
