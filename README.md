@@ -32,7 +32,6 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
-        <div class="logo-placeholder">LOGO</div>
         <div>
           <h1 class="text-2xl md:text-3xl font-extrabold">Portaria - Segunda Sem Leite 🥛🚫</h1>
           <div class="text-sm text-gray-500">Controle de entradas, arrecadação e relatórios profissionais</div>
