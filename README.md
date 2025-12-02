@@ -32,7 +32,7 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
-         <div>
+        <div>
           <h1 class="text-2xl md:text-3xl font-extrabold">Portaria - Segunda Sem Leite 🥛🚫</h1>
           <div class="text-sm text-gray-500">Controle de entradas, arrecadação e relatórios profissionais</div>
         </div>
@@ -61,7 +61,9 @@
         </div>
 
         <div class="mt-4 text-sm text-gray-600">
-          </section>
+          Dica: use editar/excluir nas linhas da tabela à direita para corrigir erros.
+        </div>
+      </section>
 
       <!-- Right top: Totais -->
       <section class="bg-white p-4 rounded-xl shadow col-span-2">
