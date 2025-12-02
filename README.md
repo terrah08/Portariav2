@@ -57,7 +57,7 @@
         </div>
 
         <div class="mt-4 text-sm text-gray-600">
-          Dica: use editar/excluir nas linhas da tabela à direita para corrigir erros.
+          
         </div>
       </section>
 
