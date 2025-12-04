@@ -151,6 +151,7 @@ const PRICE_TYPES = [
   { id: "30_pix", label: "Pix - R$30", price: 30, people: 1, kind: "Pix" },
   { id: "50_pix", label: "Pix - R$50", price: 50, people: 2, kind: "Pix" },
 
+  { id: "free50", label: "Free 50 Pessoas", price: 0, people: 50, kind: "Gratuidade" }
   { id: "free", label: "Lista (Free)", price: 0, people: 1, kind: "Gratuidade" },
   { id: "militar", label: "Militar", price: 0, people: 1, kind: "Gratuidade" },
   { id: "aniversario", label: "Aniversário", price: 0, people: 1, kind: "Gratuidade" }
