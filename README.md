@@ -10,6 +10,9 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- Chart.js DataLabels -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
 <!-- jsPDF + html2canvas -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -353,11 +356,14 @@ function generateReportVisual() {
     return a;
   }, { people:0, collected:0 });
 
-  const byKind = {};
+  // 🔥 Agora separa POR LABEL, não apenas por kind
+  const byLabel = {};
   entries.forEach(e => {
-    byKind[e.kind] = byKind[e.kind] || { count:0, collected:0 };
-    byKind[e.kind].count += e.people;
-    byKind[e.kind].collected += e.price;
+    if (!byLabel[e.type]) {
+      byLabel[e.type] = { count: 0, collected: 0 };
+    }
+    byLabel[e.type].count += e.people;
+    byLabel[e.type].collected += e.price;
   });
 
   const first = entries.length ? new Date(entries[entries.length-1].timestamp).toLocaleTimeString() : '-';
@@ -376,32 +382,48 @@ function generateReportVisual() {
   `;
 
   let totalsHtml = '<div class="grid grid-cols-1 gap-2">';
-  Object.keys(byKind).forEach(k => {
+  Object.keys(byLabel).forEach(k => {
     totalsHtml += `<div class="flex justify-between">
       <div class="text-sm">${k}</div>
-      <div class="font-semibold">R$ ${byKind[k].collected.toFixed(2)} / ${byKind[k].count}p</div>
+      <div class="font-semibold">R$ ${byLabel[k].collected.toFixed(2)} / ${byLabel[k].count}p</div>
     </div>`;
   });
   totalsHtml += '</div>';
+
   reportTotals.innerHTML = totalsHtml || '<div class="text-sm text-gray-500">Sem registros</div>';
 
-  const labels = Object.keys(byKind);
-  const data = labels.map(l => byKind[l].collected);
+  // 🔥 Gráfico separado por label (MOSTRA TUDO)
+  const labels = Object.keys(byLabel);
+  const data = labels.map(l => byLabel[l].collected);
 
   if (reportChart) { reportChart.destroy(); reportChart = null; }
 
-  reportChart = new Chart(reportChartEl, {
+reportChart = new Chart(reportChartEl, {
     type: 'doughnut',
     data: {
       labels,
-      datasets: [{ data, backgroundColor: ['#10B981','#06B6D4','#F59E0B','#6366F1','#F43F5E'] }]
+      datasets: [{
+        data,
+        backgroundColor: ['#10B981','#06B6D4','#F59E0B','#6366F1','#F43F5E']
+      }]
     },
+    plugins: [ChartDataLabels],
     options: {
       responsive: true,
-      plugins: { legend: { position: 'right' } }
+      plugins: {
+        legend: { position: 'right' },
+        datalabels: {
+          color: '#ffffff',
+          font: {
+            weight: 'bold',
+            size: 12
+          },
+          formatter: (value) => `R$ ${value.toFixed(2)}`,
+        }
+      }
     }
-  });
-}
+});
+
 
 /* ---------------------------
    PDF
