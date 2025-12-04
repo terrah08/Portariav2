@@ -167,13 +167,13 @@ PRICE_TYPES.forEach(p => {
     b.classList.add("text-xs");
     b.classList.add("bg-green-600", "hover:bg-green-700");
   } else if (p.kind === "Crédito") {
-    b.classList.add("bg-yellow-400", "hover:bg-yellow-500", "text-black");
+    b.classList.add("bg-yellow-600", "hover:bg-yellow-700", "text-black");
 } else if (p.kind === "Débito") {
     b.classList.add("bg-blue-600", "hover:bg-blue-700");
   } else if (p.kind === "Pix") {
     b.classList.add("bg-gray-600", "hover:bg-gray-700");
   } else {
-    b.classList.add("bg-slate-400", "hover:bg-slate-500");
+    b.classList.add("bg-slate-600", "hover:bg-slate-700");
   }
 
   b.textContent = p.label;
