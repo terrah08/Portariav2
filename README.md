@@ -15,7 +15,9 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-  .btn { @apply px-3 py-2 rounded-lg text-white shadow-sm; }
+  .btn {
+  @apply px-3 py-2 rounded-xl text-white shadow-md transition-all duration-200;
+}
   .small { font-size: .85rem; }
   .table-fixed td, .table-fixed th { vertical-align: middle; }
 </style>
@@ -159,7 +161,7 @@ const PRICE_TYPES = [
    --------------------------- */
 PRICE_TYPES.forEach(p => {
   const b = document.createElement('button');
-  b.className = 'px-3 py-2 rounded text-white text-sm shadow';
+  b.className = 'px-3 py-2 rounded-xl text-white text-sm shadow-md transition-all duration-200';
 
   if (p.kind === "Dinheiro") {
     b.classList.add("text-xs");
