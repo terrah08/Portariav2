@@ -10,8 +10,8 @@
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- Chart.js DataLabels -->
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<!-- Chart.js Data Labels Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <!-- jsPDF + html2canvas -->
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -29,7 +29,6 @@
 
   <div class="max-w-6xl mx-auto">
 
-    <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
         <div>
@@ -48,11 +47,8 @@
 
     <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-      <!-- Left: Registrar entrada -->
       <section class="bg-white p-4 rounded-xl shadow col-span-1">
         <h2 class="font-semibold mb-2">Registrar entrada</h2>
-
-        <!-- 🔥 Campo de nota removido completamente -->
 
         <div id="buttonsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3"></div>
 
@@ -60,13 +56,8 @@
           <button id="exportCSV" class="btn bg-indigo-600 hover:bg-indigo-700 small">Exportar CSV</button>
           <button id="generateReport" class="btn bg-blue-600 hover:bg-blue-700 small">Gerar Relatório (PDF)</button>
         </div>
-
-        <div class="mt-4 text-sm text-gray-600">
-          
-        </div>
       </section>
 
-      <!-- Right top: Totais -->
       <section class="bg-white p-4 rounded-xl shadow col-span-2">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div class="flex gap-4">
@@ -86,7 +77,6 @@
           </div>
         </div>
 
-        <!-- Tabela -->
         <div id="tableWrapper" class="mt-4 overflow-x-auto">
           <table class="min-w-full table-fixed text-sm bg-white">
             <thead class="bg-gray-50">
@@ -103,7 +93,6 @@
         </div>
       </section>
 
-      <!-- Report Panel -->
       <section id="reportPanel" class="bg-white p-4 rounded-xl shadow col-span-3 hidden">
         <div class="flex items-center justify-between mb-4 gap-4">
           <h2 class="font-semibold">Relatório Profissional - Resumo do Dia</h2>
@@ -134,9 +123,7 @@
   </div>
 
 <script>
-/* ---------------------------
-   TIPOS
-   --------------------------- */
+/* TIPOS */
 const PRICE_TYPES = [
   { id: "20", label: "Dinheiro - R$20", price: 20, people: 1, kind: "Dinheiro" },
   { id: "30", label: "Dinheiro - R$30", price: 30, people: 1, kind: "Dinheiro" },
@@ -160,9 +147,7 @@ const PRICE_TYPES = [
   { id: "aniversario", label: "Aniversário", price: 0, people: 1, kind: "Gratuidade" }
 ];
 
-/* ---------------------------
-   BOTÕES
-   --------------------------- */
+/* BOTÕES */
 PRICE_TYPES.forEach(p => {
   const b = document.createElement('button');
   b.className = 'px-3 py-2 rounded-xl text-white text-sm shadow-md transition-all duration-200';
@@ -172,7 +157,7 @@ PRICE_TYPES.forEach(p => {
     b.classList.add("bg-green-600", "hover:bg-green-700");
   } else if (p.kind === "Crédito") {
     b.classList.add("bg-yellow-400", "hover:bg-yellow-700", "text-black");
-} else if (p.kind === "Débito") {
+  } else if (p.kind === "Débito") {
     b.classList.add("bg-blue-600", "hover:bg-blue-700");
   } else if (p.kind === "Pix") {
     b.classList.add("bg-gray-600", "hover:bg-gray-700");
@@ -185,9 +170,7 @@ PRICE_TYPES.forEach(p => {
   buttonsContainer.appendChild(b);
 });
 
-/* ---------------------------
-   VARIÁVEIS E STORAGE
-   --------------------------- */
+/* VARIÁVEIS */
 const todayKey = () => new Date().toISOString().slice(0,10);
 const storageKey = d => `portaria_${d}`;
 
@@ -207,9 +190,7 @@ const reportChartEl = document.getElementById('reportChart').getContext('2d');
 let reportChart = null;
 currentDateEl.value = currentDate;
 
-/* ---------------------------
-   LOAD / SAVE
-   --------------------------- */
+/* LOAD */
 function loadEntries() {
   const raw = localStorage.getItem(storageKey(currentDate));
   entries = raw ? JSON.parse(raw) : [];
@@ -220,9 +201,7 @@ function saveEntries() {
   localStorage.setItem(storageKey(currentDate), JSON.stringify(entries));
 }
 
-/* ---------------------------
-   RENDER TABELA
-   --------------------------- */
+/* RENDER TABELA */
 function renderEntries() {
   entriesBody.innerHTML = entries.length ? entries.map(e => `
     <tr class="border-t">
@@ -247,9 +226,7 @@ function renderEntries() {
   totalCollectedEl.textContent = `R$ ${totals.collected.toFixed(2)}`;
 }
 
-/* ---------------------------
-   ADD ENTRY
-   --------------------------- */
+/* ADD ENTRY */
 function addEntry(id) {
   const t = PRICE_TYPES.find(p => p.id === id);
   if (!t) return;
@@ -267,9 +244,7 @@ function addEntry(id) {
   renderEntries();
 }
 
-/* ---------------------------
-   DELETE ENTRY
-   --------------------------- */
+/* DELETE */
 function deleteEntry(id) {
   if (!confirm('Deseja excluir este registro?')) return;
   entries = entries.filter(x => x.id !== id);
@@ -277,9 +252,7 @@ function deleteEntry(id) {
   renderEntries();
 }
 
-/* ---------------------------
-   EDIT ENTRY (sem nota)
-   --------------------------- */
+/* EDIT (sem nota) */
 function editEntry(id) {
   const item = entries.find(x => x.id === id);
   if (!item) return;
@@ -297,9 +270,7 @@ function editEntry(id) {
   renderEntries();
 }
 
-/* ---------------------------
-   CSV (sem nota)
-   --------------------------- */
+/* CSV */
 document.getElementById('exportCSV').addEventListener('click', () => {
   const headers = ['timestamp','type','price','people'];
   const rows = entries.map(e => [e.timestamp, e.type, e.price, e.people]);
@@ -314,9 +285,7 @@ document.getElementById('exportCSV').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-/* ---------------------------
-   RESET
-   --------------------------- */
+/* RESET */
 document.getElementById('resetDay').addEventListener('click', () => {
   if (!confirm('Deseja realmente limpar todos os registros do dia?')) return;
   entries = [];
@@ -326,9 +295,7 @@ document.getElementById('resetDay').addEventListener('click', () => {
 
 document.getElementById('saveDay').addEventListener('click', () => saveEntries());
 
-/* ---------------------------
-   PAINEL DE RELATÓRIO
-   --------------------------- */
+/* RELATÓRIO */
 document.getElementById('openReportPanel').addEventListener('click', () => {
   reportPanel.classList.remove('hidden');
   generateReportVisual();
@@ -338,17 +305,13 @@ document.getElementById('closeReport').addEventListener('click', () => {
   reportPanel.classList.add('hidden');
 });
 
-/* ---------------------------
-   MOSTRAR/OCULTAR TABELA
-   --------------------------- */
+/* TABELA */
 document.getElementById('toggleTable').addEventListener('click', () => {
   const w = document.getElementById('tableWrapper');
   w.style.display = (w.style.display === 'none') ? 'block' : 'none';
 });
 
-/* ---------------------------
-   GERAR RESUMO
-   --------------------------- */
+/* GERAR RESUMO + GRÁFICO COM VALORES */
 function generateReportVisual() {
   const totals = entries.reduce((a,e) => {
     a.people += e.people;
@@ -356,14 +319,11 @@ function generateReportVisual() {
     return a;
   }, { people:0, collected:0 });
 
-  // 🔥 Agora separa POR LABEL, não apenas por kind
-  const byLabel = {};
+  const byKind = {};
   entries.forEach(e => {
-    if (!byLabel[e.type]) {
-      byLabel[e.type] = { count: 0, collected: 0 };
-    }
-    byLabel[e.type].count += e.people;
-    byLabel[e.type].collected += e.price;
+    byKind[e.kind] = byKind[e.kind] || { count:0, collected:0 };
+    byKind[e.kind].count += e.people;
+    byKind[e.kind].collected += e.price;
   });
 
   const first = entries.length ? new Date(entries[entries.length-1].timestamp).toLocaleTimeString() : '-';
@@ -382,30 +342,25 @@ function generateReportVisual() {
   `;
 
   let totalsHtml = '<div class="grid grid-cols-1 gap-2">';
-  Object.keys(byLabel).forEach(k => {
+  Object.keys(byKind).forEach(k => {
     totalsHtml += `<div class="flex justify-between">
       <div class="text-sm">${k}</div>
-      <div class="font-semibold">R$ ${byLabel[k].collected.toFixed(2)} / ${byLabel[k].count}p</div>
+      <div class="font-semibold">R$ ${byKind[k].collected.toFixed(2)} / ${byKind[k].count}p</div>
     </div>`;
   });
   totalsHtml += '</div>';
-
   reportTotals.innerHTML = totalsHtml || '<div class="text-sm text-gray-500">Sem registros</div>';
 
-  // 🔥 Gráfico separado por label (MOSTRA TUDO)
-  const labels = Object.keys(byLabel);
-  const data = labels.map(l => byLabel[l].collected);
+  const labels = Object.keys(byKind);
+  const data = labels.map(l => byKind[l].collected);
 
   if (reportChart) { reportChart.destroy(); reportChart = null; }
 
-reportChart = new Chart(reportChartEl, {
+  reportChart = new Chart(reportChartEl, {
     type: 'doughnut',
     data: {
       labels,
-      datasets: [{
-        data,
-        backgroundColor: ['#10B981','#06B6D4','#F59E0B','#6366F1','#F43F5E']
-      }]
+      datasets: [{ data, backgroundColor: ['#10B981','#06B6D4','#F59E0B','#6366F1','#F43F5E'] }]
     },
     plugins: [ChartDataLabels],
     options: {
@@ -414,20 +369,15 @@ reportChart = new Chart(reportChartEl, {
         legend: { position: 'right' },
         datalabels: {
           color: '#ffffff',
-          font: {
-            weight: 'bold',
-            size: 12
-          },
-          formatter: (value) => `R$ ${value.toFixed(2)}`,
+          font: { weight: 'bold', size: 14 },
+          formatter: (value) => `R$ ${value.toFixed(2)}`
         }
       }
     }
-});
+  });
+}
 
-
-/* ---------------------------
-   PDF
-   --------------------------- */
+/* PDF */
 document.getElementById('downloadPdf').addEventListener('click', async () => {
   const panel = document.querySelector('#reportPanel');
   const closeBtn = document.getElementById('closeReport');
@@ -460,9 +410,7 @@ document.getElementById('downloadPdf').addEventListener('click', async () => {
   pdf.save(`relatorio_portaria_${currentDate}.pdf`);
 });
 
-/* ---------------------------
-   DATA CHANGE
-   --------------------------- */
+/* DATA CHANGE */
 currentDateEl.onchange = e => {
   currentDate = e.target.value;
   loadEntries();
