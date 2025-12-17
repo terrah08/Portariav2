@@ -66,9 +66,15 @@
               <div id="totalPeople" class="text-2xl font-bold">0</div>
             </div>
             <div class="bg-gray-100 p-3 rounded-lg text-center">
-              <div class="text-xs text-gray-500">Valor Total</div>
-              <div id="totalCollected" class="text-2xl font-bold">R$ 0,00</div>
+            <div class="text-xs text-gray-500 flex items-center justify-center gap-1">
+    Valor Total
+            <button id="toggleValue" class="text-gray-500 hover:text-gray-800">
+            👁️
+            </button>
             </div>
+            <div id="totalCollected" class="text-2xl font-bold">R$ 0,00</div>
+          </div>
+
           </div>
 
           <div class="flex gap-2">
