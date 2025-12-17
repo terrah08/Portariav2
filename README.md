@@ -227,7 +227,9 @@ function renderEntries() {
   }, { people:0, collected:0 });
 
   totalPeopleEl.textContent = totals.people;
-  totalCollectedEl.textContent = `R$ ${totals.collected.toFixed(2)}`;
+  totalRealValue = `R$ ${totals.collected.toFixed(2)}`;
+  totalCollectedEl.textContent = totalHidden ? "••••••" : totalRealValue;
+
 }
 
 /* ADD ENTRY */
