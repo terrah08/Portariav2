@@ -79,7 +79,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           <div id="reportSummary" class="bg-gray-50 p-5 rounded-2xl border space-y-3"></div>
           <div class="space-y-4">
              <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest border-b pb-1">Divisão Detalhada</h3>
@@ -123,7 +123,6 @@ function renderButtons() {
   const container = document.getElementById('buttonsContainer');
   container.innerHTML = '';
   const countFree = entries.filter(e => e.type.includes("50 Pessoas")).length;
-
   PRICE_TYPES.forEach(p => {
     const b = document.createElement('button');
     let sub = p.sub;
@@ -133,13 +132,11 @@ function renderButtons() {
         sub = rest > 0 ? `Restam ${rest}` : "ESGOTADO";
         if (rest <= 0) disabled = true;
     }
-
     let bgColor = 'bg-gray-400';
     if (p.kind === 'Dinheiro') bgColor = 'bg-green-600';
     if (p.kind === 'Crédito') bgColor = 'bg-yellow-500';
     if (p.kind === 'Débito') bgColor = 'bg-orange-600';
     if (p.kind === 'Pix') bgColor = 'bg-cyan-600';
-
     b.className = `p-2 h-14 rounded-lg text-white flex flex-col items-center justify-center transition-all ${disabled ? 'btn-disabled' : bgColor}`;
     let subHtml = p.sub || p.isCounter ? `<span class="text-[9px] mt-1 font-black bg-black/20 px-2 rounded-full border border-white/10">${sub}</span>` : "";
     b.innerHTML = `<span class="text-[10px] font-black uppercase leading-none">${p.label}</span>${subHtml}`;
@@ -166,7 +163,6 @@ function render() {
       <td class="p-3 text-center"><button onclick="deleteEntry(${e.id})" class="text-red-200 hover:text-red-500">✕</button></td>
     </tr>
   `).join('');
-
   const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
   document.getElementById('totalPeople').textContent = totals.p;
   document.getElementById('totalCollected').textContent = `R$ ${totals.v.toFixed(2)}`;
@@ -186,7 +182,6 @@ window.deleteEntry = (id) => {
 document.getElementById('btnOpenReport').onclick = () => {
   if(entries.length === 0) return alert("Sem dados.");
   document.getElementById('reportPanel').classList.remove('hidden');
-  
   const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
   const stats = {};
   entries.forEach(e => {
@@ -194,17 +189,25 @@ document.getElementById('btnOpenReport').onclick = () => {
     stats[e.kind].money += e.price;
     stats[e.kind].people += e.people;
   });
-
   const times = entries.map(e => e.timestamp).sort();
   const first = times.length > 0 ? new Date(times[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
   const last = times.length > 0 ? new Date(times[times.length-1]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
 
+  // AJUSTE: Ticket Médio e Caixa na mesma linha usando flexbox
   document.getElementById('reportSummary').innerHTML = `
-    <h3 class="font-black text-emerald-700 uppercase text-[10px]">Resumo do Evento</h3>
-    <div class="flex justify-between text-xs"><span>Início:</span><b>${first}</b></div>
-    <div class="flex justify-between text-xs"><span>Fim:</span><b>${last}</b></div>
-    <div class="flex justify-between text-sm border-t pt-2 mt-2"><span>Ticket Médio:</span><b class="text-blue-500">R$ ${(totals.v/totals.p).toFixed(2)}</b></div>
-    <div class="flex justify-between text-2xl font-black mt-4 border-t-2 pt-2"><span>CAIXA:</span><span class="text-emerald-600">R$ ${totals.v.toFixed(2)}</span></div>
+    <h3 class="font-black text-emerald-700 uppercase text-[10px] mb-2 tracking-widest">Resumo do Horário</h3>
+    <div class="flex justify-between text-xs py-1"><span>Primeira Entrada:</span><b>${first}</b></div>
+    <div class="flex justify-between text-xs py-1"><span>Última Entrada:</span><b>${last}</b></div>
+    <div class="border-t border-gray-200 my-3 pt-3">
+        <div class="flex justify-between items-center mb-1">
+            <span class="text-[10px] font-bold text-gray-400 uppercase">Ticket Médio</span>
+            <b class="text-blue-600 text-sm">R$ ${(totals.v/totals.p).toFixed(2)}</b>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-sm font-black text-gray-700 uppercase">VALOR CAIXA</span>
+            <span class="text-xl font-black text-emerald-600">R$ ${totals.v.toFixed(2)}</span>
+        </div>
+    </div>
   `;
 
   document.getElementById('reportTotals').innerHTML = Object.entries(stats).map(([k, v]) => `
@@ -217,12 +220,12 @@ document.getElementById('btnOpenReport').onclick = () => {
   if(chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('reportChart'), {
     type: 'doughnut',
-    data: { 
-        labels: Object.keys(stats), 
-        datasets: [{ data: Object.values(stats).map(v => v.money), backgroundColor: ['#16a34a', '#eab308', '#ea580c', '#0891b2', '#94a3b8'] }] 
-    },
+    data: { labels: Object.keys(stats), datasets: [{ data: Object.values(stats).map(v => v.money), backgroundColor: ['#16a34a', '#eab308', '#ea580c', '#0891b2', '#94a3b8'] }] },
     plugins: [ChartDataLabels],
-    options: { responsive: true, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { color: '#000', font: { weight: 'bold', size: 9 }, formatter: v => v > 0 ? `R$${v.toFixed(0)}` : '' } } }
+    options: { 
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { color: '#000', font: { weight: 'bold', size: 9 }, formatter: v => v > 0 ? `R$${v.toFixed(0)}` : '' } } 
+    }
   });
   document.getElementById('reportPanel').scrollIntoView({ behavior: 'smooth' });
 };
@@ -238,34 +241,30 @@ document.getElementById('downloadPdf').onclick = () => {
     stats[e.kind].people += e.people;
   });
 
-  doc.setFontSize(22); doc.text("SEGUNDA SEM LEITE", 105, 20, { align: "center" });
-  doc.setFontSize(10); doc.text(`RELATORIO DE FECHAMENTO - ${currentDate.split('-').reverse().join('/')}`, 105, 28, { align: "center" });
+  doc.setFontSize(22); doc.setTextColor(21, 128, 61); doc.text("SEGUNDA SEM LEITE", 105, 20, { align: "center" });
+  doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.text(`RELATORIO DE FECHAMENTO - ${currentDate.split('-').reverse().join('/')}`, 105, 28, { align: "center" });
   doc.line(15, 32, 195, 32);
 
-  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(0, 0, 0);
   doc.text("RESUMO GERAL", 15, 45);
   doc.setFontSize(10); doc.setFont(undefined, 'normal');
   doc.text(`Publico Total: ${totals.p} pessoas`, 15, 55);
-  doc.text(`Valor Total Arrecadado: R$ ${totals.v.toFixed(2)}`, 15, 62);
+  doc.setFont(undefined, 'bold'); doc.text(`VALOR TOTAL CAIXA: R$ ${totals.v.toFixed(2)}`, 15, 62);
   
-  doc.setFont(undefined, 'bold');
   doc.text("DETALHAMENTO POR CATEGORIA:", 15, 75);
   let currentY = 85;
   Object.entries(stats).forEach(([k, v]) => {
-    doc.setFont(undefined, 'bold');
-    doc.text(`${k}:`, 20, currentY);
-    doc.setFont(undefined, 'normal');
-    doc.text(`${v.people} pessoas`, 60, currentY);
+    doc.setFont(undefined, 'bold'); doc.text(`${k}:`, 20, currentY);
+    doc.setFont(undefined, 'normal'); doc.text(`${v.people} pessoas`, 60, currentY);
     doc.text(`Subtotal: R$ ${v.money.toFixed(2)}`, 110, currentY);
     currentY += 10;
   });
 
-  // --- ADICIONAR O GRÁFICO AO PDF ---
+  // ADICIONAR O GRÁFICO AO PDF
   const canvas = document.getElementById('reportChart');
   if (canvas) {
-    const chartImg = canvas.toDataURL("image/png", 1.0);
-    // Posiciona o gráfico abaixo da lista (Y atual + 10)
-    doc.addImage(chartImg, 'PNG', 50, currentY + 10, 100, 100); 
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    doc.addImage(imgData, 'PNG', 55, currentY + 10, 100, 100);
   }
 
   doc.save(`Fechamento_SSL_${currentDate}.pdf`);
