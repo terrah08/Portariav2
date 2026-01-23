@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
@@ -129,18 +128,16 @@ function renderButtons() {
     const b = document.createElement('button');
     let sub = p.sub;
     let disabled = false;
-
     if (p.isCounter) {
         const rest = p.limit - countFree;
         sub = rest > 0 ? `Restam ${rest}` : "ESGOTADO";
         if (rest <= 0) disabled = true;
     }
 
-    // Lógica de cores atualizada
     let bgColor = 'bg-gray-400';
     if (p.kind === 'Dinheiro') bgColor = 'bg-green-600';
-    if (p.kind === 'Crédito') bgColor = 'bg-yellow-500'; // Amarelo para Crédito
-    if (p.kind === 'Débito') bgColor = 'bg-orange-600'; // Diferenciação para Débito
+    if (p.kind === 'Crédito') bgColor = 'bg-yellow-500';
+    if (p.kind === 'Débito') bgColor = 'bg-orange-600';
     if (p.kind === 'Pix') bgColor = 'bg-cyan-600';
 
     b.className = `p-2 h-14 rounded-lg text-white flex flex-col items-center justify-center transition-all ${disabled ? 'btn-disabled' : bgColor}`;
@@ -212,10 +209,7 @@ document.getElementById('btnOpenReport').onclick = () => {
 
   document.getElementById('reportTotals').innerHTML = Object.entries(stats).map(([k, v]) => `
     <div class="flex justify-between items-center border-b py-2">
-      <div>
-        <div class="text-[10px] font-black uppercase text-gray-700">${k}</div>
-        <div class="text-[9px] text-gray-400 font-bold">${v.people} pessoas</div>
-      </div>
+      <div><div class="text-[10px] font-black uppercase text-gray-700">${k}</div><div class="text-[9px] text-gray-400 font-bold">${v.people} pessoas</div></div>
       <div class="font-black text-gray-600 text-xs">R$ ${v.money.toFixed(2)}</div>
     </div>
   `).join('');
@@ -225,10 +219,7 @@ document.getElementById('btnOpenReport').onclick = () => {
     type: 'doughnut',
     data: { 
         labels: Object.keys(stats), 
-        datasets: [{ 
-            data: Object.values(stats).map(v => v.money), 
-            backgroundColor: ['#16a34a', '#eab308', '#ea580c', '#0891b2', '#94a3b8'] 
-        }] 
+        datasets: [{ data: Object.values(stats).map(v => v.money), backgroundColor: ['#16a34a', '#eab308', '#ea580c', '#0891b2', '#94a3b8'] }] 
     },
     plugins: [ChartDataLabels],
     options: { responsive: true, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { color: '#000', font: { weight: 'bold', size: 9 }, formatter: v => v > 0 ? `R$${v.toFixed(0)}` : '' } } }
@@ -258,7 +249,7 @@ document.getElementById('downloadPdf').onclick = () => {
   doc.text(`Valor Total Arrecadado: R$ ${totals.v.toFixed(2)}`, 15, 62);
   
   doc.setFont(undefined, 'bold');
-  doc.text("DETALHAMENTO DETALHADO:", 15, 75);
+  doc.text("DETALHAMENTO POR CATEGORIA:", 15, 75);
   let currentY = 85;
   Object.entries(stats).forEach(([k, v]) => {
     doc.setFont(undefined, 'bold');
@@ -269,11 +260,18 @@ document.getElementById('downloadPdf').onclick = () => {
     currentY += 10;
   });
 
+  // --- ADICIONAR O GRÁFICO AO PDF ---
+  const canvas = document.getElementById('reportChart');
+  if (canvas) {
+    const chartImg = canvas.toDataURL("image/png", 1.0);
+    // Posiciona o gráfico abaixo da lista (Y atual + 10)
+    doc.addImage(chartImg, 'PNG', 50, currentY + 10, 100, 100); 
+  }
+
   doc.save(`Fechamento_SSL_${currentDate}.pdf`);
 };
 
 function toggleBlur() { isValueVisible = !isValueVisible; document.getElementById('eyeIcon').textContent = isValueVisible ? '👁️' : '🙈'; render(); }
-
 document.getElementById('resetDay').onclick = () => { if(confirm('Zerar hoje?')) { entries=[]; localStorage.removeItem(`ctj_final_${currentDate}`); render(); } };
 const dateEl = document.getElementById('currentDate');
 dateEl.value = currentDate;
