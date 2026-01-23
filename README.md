@@ -1,125 +1,94 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Portaria - Segunda Sem Leite (Relatório Profissional)</title>
+<title>Portaria - Segunda Sem Leite 🥛🚫</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-  .btn {
-  @apply px-3 py-2 rounded-xl text-white shadow-md transition-all duration-200;
-}
-  .small { font-size: .85rem; }
-  .table-fixed td, .table-fixed th { vertical-align: middle; }
-  /* Estilo para esconder o valor sem quebrar o layout */
-  .hidden-value { filter: blur(5px); pointer-events: none; user-select: none; }
+  .btn { @apply px-3 py-2 rounded-xl text-white shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center gap-2; }
+  .hidden-value { filter: blur(6px); pointer-events: none; user-select: none; }
+  #chartWrapper { width: 100%; max-width: 300px; margin: 0 auto; }
+  .btn-disabled { @apply bg-gray-300 shadow-none cursor-not-allowed scale-100 opacity-60 !important; }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+<body class="bg-gray-50 min-h-screen p-2 md:p-8 text-gray-800 font-sans">
 
   <div class="max-w-6xl mx-auto">
-
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <div class="flex items-center gap-4">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold">Portaria - Segunda Sem Leite 🥛🚫</h1>
-          <div class="text-sm text-gray-500">Controle de entradas, arrecadação e relatórios profissionais</div>
-        </div>
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm border-b-2 border-pink-200">
+      <div>
+        <h1 class="text-xl md:text-3xl font-extrabold text-gray-800">Portaria - Segunda Sem Leite 🥛🚫</h1>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Gestão de Portaria</p>
       </div>
-
-      <div class="flex gap-3 items-center">
-        <label class="small text-gray-600">Dia:</label>
-        <input id="currentDate" type="date" class="border rounded px-2 py-1" />
-        <button id="saveDay" class="btn bg-green-600 hover:bg-green-700 small">Salvar</button>
-        <button id="resetDay" class="btn bg-red-600 hover:bg-red-700 small">Resetar</button>
+      <div class="flex gap-2 items-center bg-gray-100 p-2 rounded-lg border border-gray-200">
+        <input id="currentDate" type="date" class="border rounded px-2 py-1 text-sm font-bold bg-white" />
+        <button id="resetDay" class="btn bg-red-500 hover:bg-red-600 p-2">🗑️</button>
       </div>
     </header>
 
     <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-      <section class="bg-white p-4 rounded-xl shadow col-span-1">
-        <h2 class="font-semibold mb-2">Registrar entrada</h2>
-
-        <div id="buttonsContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3"></div>
-
-        <div class="flex gap-2">
-          <button id="exportCSV" class="btn bg-indigo-600 hover:bg-indigo-700 small">Exportar CSV</button>
-          <button id="generateReport" class="btn bg-blue-600 hover:bg-blue-700 small">Gerar Relatório (PDF)</button>
-        </div>
+      
+      <section class="bg-white p-4 rounded-xl shadow col-span-1 border-t-4 border-blue-500 h-fit">
+        <h2 class="font-bold text-gray-400 text-[10px] uppercase mb-4">Registros</h2>
+        <div id="buttonsContainer" class="grid grid-cols-2 gap-2 mb-6"></div>
+        <button id="btnOpenReport" class="w-full btn bg-blue-600 font-bold py-3 text-sm">
+          <span>📄 GERAR RELATÓRIO PDF</span>
+        </button>
       </section>
 
-      <section class="bg-white p-4 rounded-xl shadow col-span-2">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div class="flex gap-4">
-            <div class="bg-gray-100 p-3 rounded-lg text-center min-w-[100px]">
-              <div class="text-xs text-gray-500 uppercase font-bold mb-1">Pessoas</div>
-              <div id="totalPeople" class="text-2xl font-bold">0</div>
-            </div>
-            
-            <div class="bg-gray-100 p-3 rounded-lg text-center min-w-[140px] relative">
-              <div class="flex items-center justify-center gap-2 mb-1">
-                 <span class="text-xs text-gray-500 uppercase font-bold">Valor Total</span>
-                 <button id="toggleValue" class="text-sm opacity-60 hover:opacity-100 transition-opacity" title="Mostrar/Ocultar valor">
-                    <span id="eyeIcon">👁️</span>
-                 </button>
-              </div>
-              <div id="totalCollected" class="text-2xl font-bold">R$ 0,00</div>
-            </div>
+      <section class="bg-white p-4 rounded-xl shadow col-span-2 border-t-4 border-emerald-500">
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-center">
+            <div class="text-[10px] text-emerald-600 font-bold uppercase">Público Total</div>
+            <div id="totalPeople" class="text-4xl font-black text-emerald-900">0</div>
           </div>
-
-          <div class="flex gap-2">
-            <button id="openReportPanel" class="btn bg-emerald-600 hover:bg-emerald-700 small">Painel de Relatório</button>
-            <button id="toggleTable" class="btn bg-slate-600 hover:bg-slate-700 small">Mostrar/Ocultar Tabela</button>
+          <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 relative text-center">
+            <div class="flex justify-between items-center px-2">
+              <div class="text-[10px] text-blue-600 font-bold uppercase">Caixa Total</div>
+              <button onclick="toggleBlur()" class="text-sm"> <span id="eyeIcon">👁️</span> </button>
+            </div>
+            <div id="totalCollected" class="text-4xl font-black text-blue-900">R$ 0,00</div>
           </div>
         </div>
 
-        <div id="tableWrapper" class="mt-4 overflow-x-auto">
-          <table class="min-w-full table-fixed text-sm bg-white">
-            <thead class="bg-gray-50">
+        <div class="overflow-hidden rounded-xl border border-gray-100 bg-white">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-gray-50 text-gray-400 uppercase font-bold">
               <tr>
-                <th class="p-2">Hora</th>
-                <th class="p-2">Tipo</th>
-                <th class="p-2 text-right">Valor</th>
-                <th class="p-2 text-center">Pessoas</th>
-                <th class="p-2">Ações</th>
+                <th class="p-3">Hora</th>
+                <th class="p-3">Tipo</th>
+                <th class="p-3 text-right">Valor</th>
+                <th class="p-3 text-center">✕</th>
               </tr>
             </thead>
-            <tbody id="entriesBody"></tbody>
+            <tbody id="entriesBody" class="divide-y divide-gray-50"></tbody>
           </table>
         </div>
       </section>
 
-      <section id="reportPanel" class="bg-white p-4 rounded-xl shadow col-span-3 hidden">
-        <div class="flex items-center justify-between mb-4 gap-4">
-          <h2 class="font-semibold">Relatório Profissional - Resumo do Dia</h2>
-          <div class="flex gap-2">
-            <button id="downloadPdf" class="btn bg-cyan-600 hover:bg-cyan-700 small">Salvar PDF</button>
-            <button id="closeReport" class="btn bg-gray-500 hover:bg-gray-600 small">Fechar</button>
+      <section id="reportPanel" class="bg-white p-6 rounded-xl shadow-2xl col-span-3 hidden border-b-8 border-emerald-600">
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b pb-4">
+          <h2 class="text-xl font-black uppercase italic text-gray-700">Conferência de Fechamento</h2>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button id="downloadPdf" class="btn bg-emerald-600 font-bold flex-1 px-6 text-sm">💾 BAIXAR PDF</button>
+            <button onclick="document.getElementById('reportPanel').classList.add('hidden')" class="btn bg-gray-400 px-4">X</button>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Resumo</div>
-            <div id="reportSummary" class="bg-gray-50 p-3 rounded"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div id="reportSummary" class="bg-gray-50 p-5 rounded-2xl border space-y-3"></div>
+          <div class="space-y-4">
+             <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest border-b pb-1">Pessoas por Categoria</h3>
+             <div id="reportTotals" class="space-y-1"></div>
           </div>
-
-          <div>
-            <div class="text-sm text-gray-600 mb-1">Totais por forma de pagamento</div>
-            <div id="reportTotals" class="bg-gray-50 p-3 rounded"></div>
+          <div id="chartWrapper">
+            <canvas id="reportChart"></canvas>
           </div>
-        </div>
-
-        <div>
-          <canvas id="reportChart" height="140"></canvas>
         </div>
       </section>
 
@@ -127,321 +96,174 @@
   </div>
 
 <script>
-/* TIPOS */
 const PRICE_TYPES = [
-  { id: "20", label: "Dinheiro - R$20", price: 20, people: 1, kind: "Dinheiro" },
-  { id: "30", label: "Dinheiro - R$30", price: 30, people: 1, kind: "Dinheiro" },
-  { id: "50", label: "Dinheiro - R$50", price: 50, people: 2, kind: "Dinheiro" },
-
-  { id: "20_credito", label: "Crédito - R$20", price: 20, people: 1, kind: "Crédito" },
-  { id: "30_credito", label: "Crédito - R$30", price: 30, people: 1, kind: "Crédito" },
-  { id: "50_credito", label: "Crédito - R$50", price: 50, people: 2, kind: "Crédito" },
-
-  { id: "20_debito", label: "Débito - R$20", price: 20, people: 1, kind: "Débito" },
-  { id: "30_debito", label: "Débito - R$30", price: 30, people: 1, kind: "Débito" },
-  { id: "50_debito", label: "Débito - R$50", price: 50, people: 2, kind: "Débito" },
-
-  { id: "20_pix", label: "Pix - R$20", price: 20, people: 1, kind: "Pix" },
-  { id: "30_pix", label: "Pix - R$30", price: 30, people: 1, kind: "Pix" },
-  { id: "50_pix", label: "Pix - R$50", price: 50, people: 2, kind: "Pix" },
-
-  { id: "free50", label: "Free 50 Pessoas", price: 0, people: 1, kind: "Gratuidade" },
-  { id: "free", label: "Lista (Free)", price: 0, people: 1, kind: "Gratuidade" },
-  { id: "militar", label: "Militar", price: 0, people: 1, kind: "Gratuidade" },
-  { id: "aniversario", label: "Aniversário", price: 0, people: 1, kind: "Gratuidade" }
+  { id: "20_din", label: "Dinheiro R$20", sub: "Individual", price: 20, people: 1, kind: "Dinheiro" },
+  { id: "30_din", label: "Dinheiro R$30", sub: "Individual", price: 30, people: 1, kind: "Dinheiro" },
+  { id: "50_din", label: "Dinheiro R$50", sub: "Dupla", price: 50, people: 2, kind: "Dinheiro" },
+  { id: "20_cred", label: "R$20 - Crédito", sub: "Individual", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_cred", label: "R$30 - Crédito", sub: "Individual", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_cred", label: "R$50 - Crédito", sub: "Dupla", price: 50, people: 2, kind: "Cartão" },
+  { id: "20_debt", label: "R$20 - Débito", sub: "Individual", price: 20, people: 1, kind: "Cartão" },
+  { id: "30_debt", label: "R$30 - Débito", sub: "Individual", price: 30, people: 1, kind: "Cartão" },
+  { id: "50_debt", label: "R$50 - Débito", sub: "Dupla", price: 50, people: 2, kind: "Cartão" },  
+  { id: "20_pix", label: "Pix R$20", sub: "Individual", price: 20, people: 1, kind: "Pix" },
+  { id: "30_pix", label: "Pix R$30", sub: "Individual", price: 30, people: 1, kind: "Pix" },
+  { id: "50_pix", label: "Pix R$50", sub: "Dupla", price: 50, people: 2, kind: "Pix" },
+  { id: "f50", label: "50 Pessoas", sub: "FREE", price: 0, people: 1, kind: "Gratuidade", isCounter: true, limit: 50 },
+  { id: "list", label: "Lista", sub: "", price: 0, people: 1, kind: "Gratuidade" },
+  { id: "Aniv", label: "Aniversário", sub: "", price: 0, people: 1, kind: "Gratuidade" },
+  { id: "milt", label: "Militar", sub: "", price: 0, people: 1, kind: "Gratuidade" }
 ];
 
-/* BOTÕES */
-const buttonsContainer = document.getElementById('buttonsContainer');
-PRICE_TYPES.forEach(p => {
-  const b = document.createElement('button');
-  b.className = 'px-3 py-2 rounded-xl text-white text-sm shadow-md transition-all duration-200';
-
-  if (p.kind === "Dinheiro") {
-    b.classList.add("text-xs");
-    b.classList.add("bg-green-600", "hover:bg-green-700");
-  } else if (p.kind === "Crédito") {
-    b.classList.add("bg-yellow-400", "hover:bg-yellow-700", "text-black");
-  } else if (p.kind === "Débito") {
-    b.classList.add("bg-blue-600", "hover:bg-blue-700");
-  } else if (p.kind === "Pix") {
-    b.classList.add("bg-gray-600", "hover:bg-gray-700");
-  } else {
-    b.classList.add("bg-slate-400", "hover:bg-slate-700");
-  }
-
-  b.textContent = p.label;
-  b.onclick = () => addEntry(p.id);
-  buttonsContainer.appendChild(b);
-});
-
-/* VARIÁVEIS */
-const todayKey = () => new Date().toISOString().slice(0,10);
-const storageKey = d => `portaria_${d}`;
-
-let currentDate = todayKey();
 let entries = [];
-let isValueVisible = true; // Controle de visibilidade
+let isValueVisible = true;
+let chartInstance = null;
+let currentDate = new Date().toISOString().slice(0,10);
 
-const currentDateEl = document.getElementById('currentDate');
-const entriesBody = document.getElementById('entriesBody');
-const totalPeopleEl = document.getElementById('totalPeople');
-const totalCollectedEl = document.getElementById('totalCollected');
-const toggleValueBtn = document.getElementById('toggleValue');
-const eyeIcon = document.getElementById('eyeIcon');
+function renderButtons() {
+  const container = document.getElementById('buttonsContainer');
+  container.innerHTML = '';
+  const count100 = entries.filter(e => e.type.includes("100 Pessoas")).length;
 
-const reportPanel = document.getElementById('reportPanel');
-const reportSummary = document.getElementById('reportSummary');
-const reportTotals = document.getElementById('reportTotals');
-const reportChartEl = document.getElementById('reportChart').getContext('2d');
+  PRICE_TYPES.forEach(p => {
+    const b = document.createElement('button');
+    let sub = p.sub;
+    let disabled = false;
 
-let reportChart = null;
-currentDateEl.value = currentDate;
+    if (p.isCounter) {
+        const rest = p.limit - count100;
+        sub = rest > 0 ? `Restam ${rest}` : "ESGOTADO";
+        if (rest <= 0) disabled = true;
+    }
 
-/* Lógica do Olho */
-toggleValueBtn.onclick = () => {
-    isValueVisible = !isValueVisible;
-    eyeIcon.textContent = isValueVisible ? '👁️' : '🙈';
-    totalCollectedEl.classList.toggle('hidden-value', !isValueVisible);
+    b.className = `p-2 h-14 rounded-lg text-white flex flex-col items-center justify-center transition-all ${disabled ? 'btn-disabled' : (p.kind === 'Dinheiro' ? 'bg-green-600' : p.kind === 'Cartão' ? 'bg-amber-500' : p.kind === 'Pix' ? 'bg-cyan-600' : 'bg-gray-400')}`;
+    let subHtml = p.sub || p.isCounter ? `<span class="text-[9px] mt-1 font-black bg-black/20 px-2 rounded-full border border-white/10">${sub}</span>` : "";
+    b.innerHTML = `<span class="text-[10px] font-black uppercase leading-none">${p.label}</span>${subHtml}`;
+    if (!disabled) b.onclick = () => addEntry(p);
+    container.appendChild(b);
+  });
+}
+
+function load() {
+  const data = localStorage.getItem(`ctj_final_${currentDate}`);
+  entries = data ? JSON.parse(data) : [];
+  render();
+}
+
+function render() {
+  renderButtons();
+  const body = document.getElementById('entriesBody');
+  const blurClass = isValueVisible ? '' : 'hidden-value';
+  body.innerHTML = entries.map(e => `
+    <tr class="hover:bg-gray-50 border-b border-gray-50">
+      <td class="p-3 text-gray-400 font-mono">${e.time}</td>
+      <td class="p-3 font-bold text-gray-700 uppercase text-[10px]">${e.type}</td>
+      <td class="p-3 text-right font-black ${blurClass}">R$ ${e.price.toFixed(2)}</td>
+      <td class="p-3 text-center"><button onclick="deleteEntry(${e.id})" class="text-red-200 hover:text-red-500">✕</button></td>
+    </tr>
+  `).join('');
+
+  const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
+  document.getElementById('totalPeople').textContent = totals.p;
+  document.getElementById('totalCollected').textContent = `R$ ${totals.v.toFixed(2)}`;
+}
+
+function addEntry(p) {
+  const fullLabel = p.sub ? `${p.label} ${p.sub}` : p.label;
+  entries.unshift({ id: Date.now(), time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), timestamp: new Date().getTime(), type: fullLabel, price: p.price, people: p.people, kind: p.kind });
+  localStorage.setItem(`ctj_final_${currentDate}`, JSON.stringify(entries));
+  render();
+}
+
+window.deleteEntry = (id) => {
+  if(confirm('Remover registro?')) { entries = entries.filter(e => e.id !== id); localStorage.setItem(`ctj_final_${currentDate}`, JSON.stringify(entries)); render(); }
 };
 
-/* LOAD */
-function loadEntries() {
-  const raw = localStorage.getItem(storageKey(currentDate));
-  entries = raw ? JSON.parse(raw) : [];
-  renderEntries();
-}
-
-function saveEntries() {
-  localStorage.setItem(storageKey(currentDate), JSON.stringify(entries));
-}
-
-/* RENDER TABELA */
-function renderEntries() {
-  entriesBody.innerHTML = entries.length ? entries.map(e => `
-    <tr class="border-t">
-      <td class="p-2">${new Date(e.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-      <td class="p-2">${e.type}</td>
-      <td class="p-2 text-right">R$ ${e.price.toFixed(2)}</td>
-      <td class="p-2 text-center">${e.people}</td>
-      <td class="p-2 flex gap-2">
-        <button class="px-2 py-1 bg-yellow-500 text-white rounded text-xs" onclick="editEntry(${e.id})">Editar</button>
-        <button class="px-2 py-1 bg-red-500 text-white rounded text-xs" onclick="deleteEntry(${e.id})">Excluir</button>
-      </td>
-    </tr>`).join('') :
-    `<tr><td colspan="5" class="text-center p-4 text-gray-400">Nenhum registro</td></tr>`;
-
-  const totals = entries.reduce((acc, e) => {
-    acc.people += e.people;
-    acc.collected += e.price;
-    return acc;
-  }, { people:0, collected:0 });
-
-  totalPeopleEl.textContent = totals.people;
-  totalCollectedEl.textContent = `R$ ${totals.collected.toFixed(2)}`;
-}
-
-/* ADD ENTRY */
-function addEntry(id) {
-  const t = PRICE_TYPES.find(p => p.id === id);
-  if (!t) return;
-
-  entries.unshift({
-    id: Date.now(),
-    timestamp: new Date().toISOString(),
-    type: t.label,
-    price: t.price,
-    people: t.people,
-    kind: t.kind
-  });
-
-  saveEntries();
-  renderEntries();
-}
-
-/* DELETE */
-function deleteEntry(id) {
-  if (!confirm('Deseja excluir este registro?')) return;
-  entries = entries.filter(x => x.id !== id);
-  saveEntries();
-  renderEntries();
-}
-
-/* EDIT */
-function editEntry(id) {
-  const item = entries.find(x => x.id === id);
-  if (!item) return;
-
-  const newPrice = prompt('Editar preço (somente números):', item.price);
-  if (newPrice === null) return;
-
-  const newPeople = prompt('Editar número de pessoas:', item.people);
-  if (newPeople === null) return;
-
-  item.price = Number(newPrice) || 0;
-  item.people = Number(newPeople) || 0;
-
-  saveEntries();
-  renderEntries();
-}
-
-/* CSV */
-document.getElementById('exportCSV').addEventListener('click', () => {
-  const headers = ['timestamp','type','price','people'];
-  const rows = entries.map(e => [e.timestamp, e.type, e.price, e.people]);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `portaria_${currentDate}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-/* RESET */
-document.getElementById('resetDay').addEventListener('click', () => {
-  if (!confirm('Deseja realmente limpar todos os registros do dia?')) return;
-  entries = [];
-  saveEntries();
-  renderEntries();
-});
-
-document.getElementById('saveDay').addEventListener('click', () => saveEntries());
-
-/* RELATÓRIO */
-document.getElementById('openReportPanel').addEventListener('click', () => {
-  reportPanel.classList.remove('hidden');
-  generateReportVisual();
-});
-
-document.getElementById('closeReport').addEventListener('click', () => {
-  reportPanel.classList.add('hidden');
-});
-
-/* TABELA */
-document.getElementById('toggleTable').addEventListener('click', () => {
-  const w = document.getElementById('tableWrapper');
-  w.style.display = (w.style.display === 'none') ? 'block' : 'none';
-});
-
-/* GERAR RESUMO + GRÁFICO COM VALORES */
-function generateReportVisual() {
-  const totals = entries.reduce((a,e) => {
-    a.people += e.people;
-    a.collected += e.price;
-    return a;
-  }, { people:0, collected:0 });
-
-  const byKind = {};
+document.getElementById('btnOpenReport').onclick = () => {
+  if(entries.length === 0) return alert("Sem dados.");
+  document.getElementById('reportPanel').classList.remove('hidden');
+  
+  const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
+  const stats = {};
   entries.forEach(e => {
-    byKind[e.kind] = byKind[e.kind] || { count:0, collected:0 };
-    byKind[e.kind].count += e.people;
-    byKind[e.kind].collected += e.price;
+    if(!stats[e.kind]) stats[e.kind] = { money: 0, people: 0 };
+    stats[e.kind].money += e.price;
+    stats[e.kind].people += e.people;
   });
 
-  const first = entries.length ? new Date(entries[entries.length-1].timestamp).toLocaleTimeString() : '-';
-  const last = entries.length ? new Date(entries[0].timestamp).toLocaleTimeString() : '-';
-  const avg = totals.people ? (totals.collected / totals.people) : 0;
+  const times = entries.map(e => e.timestamp).sort();
+  const first = new Date(times[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  const last = new Date(times[times.length-1]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-  reportSummary.innerHTML = `
-    <div class="text-sm">
-      <p><strong>Data:</strong> ${currentDate}</p>
-      <p><strong>Valor Total:</strong> R$ ${totals.collected.toFixed(2)}</p>
-      <p><strong>Total de pessoas:</strong> ${totals.people}</p>
-      <p><strong>Primeira entrada:</strong> ${first}</p>
-      <p><strong>Última entrada:</strong> ${last}</p>
-      <p><strong>Média por pessoa:</strong> R$ ${avg.toFixed(2)}</p>
-    </div>
+  document.getElementById('reportSummary').innerHTML = `
+    <h3 class="font-black text-emerald-700 uppercase text-[10px]">Resumo do Evento</h3>
+    <div class="flex justify-between text-xs"><span>Início:</span><b>${first}</b></div>
+    <div class="flex justify-between text-xs"><span>Fim:</span><b>${last}</b></div>
+    <div class="flex justify-between text-sm border-t pt-2 mt-2"><span>Ticket Médio:</span><b class="text-blue-500">R$ ${(totals.v/totals.p).toFixed(2)}</b></div>
+    <div class="flex justify-between text-2xl font-black mt-4 border-t-2 pt-2"><span>CAIXA:</span><span class="text-emerald-600">R$ ${totals.v.toFixed(2)}</span></div>
   `;
 
-  let totalsHtml = '<div class="grid grid-cols-1 gap-2">';
-  Object.keys(byKind).forEach(k => {
-    totalsHtml += `<div class="flex justify-between">
-      <div class="text-sm">${k}</div>
-      <div class="font-semibold">R$ ${byKind[k].collected.toFixed(2)} / ${byKind[k].count}p</div>
-    </div>`;
-  });
-  totalsHtml += '</div>';
-  reportTotals.innerHTML = totalsHtml || '<div class="text-sm text-gray-500">Sem registros</div>';
+  document.getElementById('reportTotals').innerHTML = Object.entries(stats).map(([k, v]) => `
+    <div class="flex justify-between items-center border-b py-2">
+      <div>
+        <div class="text-[10px] font-black uppercase text-gray-700">${k}</div>
+        <div class="text-[9px] text-gray-400 font-bold">${v.people} pessoas</div>
+      </div>
+      <div class="font-black text-gray-600 text-xs">R$ ${v.money.toFixed(2)}</div>
+    </div>
+  `).join('');
 
-  const labels = Object.keys(byKind);
-  const data = labels.map(l => byKind[l].collected);
-
-  if (reportChart) { reportChart.destroy(); reportChart = null; }
-
-  reportChart = new Chart(reportChartEl, {
+  if(chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(document.getElementById('reportChart'), {
     type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data, backgroundColor: ['#10B981','#06B6D4','#F59E0B','#6366F1','#F43F5E'] }]
-    },
+    data: { labels: Object.keys(stats), datasets: [{ data: Object.values(stats).map(v => v.money), backgroundColor: ['#10b981', '#f59e0b', '#06b6d4', '#cbd5e1'] }] },
     plugins: [ChartDataLabels],
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'right' },
-        datalabels: {
-          color: '#ffffff',
-          font: { weight: 'bold', size: 14 },
-          formatter: (value) => `R$ ${value.toFixed(2)}`
-        }
-      }
-    }
+    options: { responsive: true, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { color: '#000', font: { weight: 'bold', size: 9 }, formatter: v => v > 0 ? `R$${v.toFixed(0)}` : '' } } }
   });
-}
-
-/* PDF */
-document.getElementById('downloadPdf').addEventListener('click', async () => {
-  const panel = document.querySelector('#reportPanel');
-  const closeBtn = document.getElementById('closeReport');
-  const downloadBtn = document.getElementById('downloadPdf');
-
-  closeBtn.style.display = 'none';
-  downloadBtn.style.display = 'none';
-
-  await new Promise(r => setTimeout(r, 200));
-
-  const canvas = await html2canvas(panel, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-  const imgData = canvas.toDataURL('image/png');
-
-  closeBtn.style.display = '';
-  downloadBtn.style.display = '';
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const margin = 20;
-  const imgProps = pdf.getImageProperties(imgData);
-  const imgWidth = pageWidth - margin*2;
-  const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-
-  pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
-  pdf.setFontSize(10);
-  pdf.text(`Relatório gerado: ${new Date().toLocaleString()}`, margin, pdf.internal.pageSize.getHeight() - 10);
-
-  pdf.save(`relatorio_portaria_${currentDate}.pdf`);
-});
-
-/* DATA CHANGE */
-currentDateEl.onchange = e => {
-  currentDate = e.target.value;
-  loadEntries();
+  document.getElementById('reportPanel').scrollIntoView({ behavior: 'smooth' });
 };
 
-function init() {
-  currentDateEl.value = currentDate;
-  loadEntries();
-  renderEntries();
-}
-init();
+document.getElementById('downloadPdf').onclick = () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
+  const stats = {};
+  entries.forEach(e => {
+    if(!stats[e.kind]) stats[e.kind] = { money: 0, people: 0 };
+    stats[e.kind].money += e.price;
+    stats[e.kind].people += e.people;
+  });
 
-window.deleteEntry = deleteEntry;
-window.editEntry = editEntry;
-window.addEntry = addEntry;
+  doc.setFontSize(22); doc.text("CASA TERESA E JORGE", 105, 20, { align: "center" });
+  doc.setFontSize(10); doc.text(`RELATORIO DE FECHAMENTO - ${currentDate.split('-').reverse().join('/')}`, 105, 28, { align: "center" });
+  doc.line(15, 32, 195, 32);
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text("RESUMO GERAL", 15, 45);
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text(`Publico Total: ${totals.p} pessoas`, 15, 55);
+  doc.text(`Valor Total Arrecadado: R$ ${totals.v.toFixed(2)}`, 15, 62);
+  
+  doc.setFont(undefined, 'bold');
+  doc.text("DETALHAMENTO POR CATEGORIA:", 15, 75);
+  let currentY = 85;
+  Object.entries(stats).forEach(([k, v]) => {
+    doc.setFont(undefined, 'bold');
+    doc.text(`${k}:`, 20, currentY);
+    doc.setFont(undefined, 'normal');
+    doc.text(`${v.people} pessoas`, 60, currentY);
+    doc.text(`Subtotal: R$ ${v.money.toFixed(2)}`, 110, currentY);
+    currentY += 10;
+  });
+
+  doc.save(`Fechamento_${currentDate}.pdf`);
+};
+
+document.getElementById('resetDay').onclick = () => { if(confirm('Zerar hoje?')) { entries=[]; localStorage.removeItem(`ctj_final_${currentDate}`); render(); } };
+const dateEl = document.getElementById('currentDate');
+dateEl.value = currentDate;
+dateEl.onchange = (e) => { currentDate = e.target.value; load(); };
+load();
 </script>
-
 </body>
 </html>
