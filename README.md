@@ -123,7 +123,8 @@ let currentDate = new Date().toISOString().slice(0,10);
 function renderButtons() {
   const container = document.getElementById('buttonsContainer');
   container.innerHTML = '';
-  const count100 = entries.filter(e => e.type.includes("100 Pessoas")).length;
+  // Agora filtra corretamente pelo nome "50 Pessoas"
+  const countFree = entries.filter(e => e.type.includes("50 Pessoas")).length;
 
   PRICE_TYPES.forEach(p => {
     const b = document.createElement('button');
@@ -131,7 +132,7 @@ function renderButtons() {
     let disabled = false;
 
     if (p.isCounter) {
-        const rest = p.limit - count100;
+        const rest = p.limit - countFree;
         sub = rest > 0 ? `Restam ${rest}` : "ESGOTADO";
         if (rest <= 0) disabled = true;
     }
@@ -192,8 +193,8 @@ document.getElementById('btnOpenReport').onclick = () => {
   });
 
   const times = entries.map(e => e.timestamp).sort();
-  const first = new Date(times[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  const last = new Date(times[times.length-1]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  const first = times.length > 0 ? new Date(times[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
+  const last = times.length > 0 ? new Date(times[times.length-1]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
 
   document.getElementById('reportSummary').innerHTML = `
     <h3 class="font-black text-emerald-700 uppercase text-[10px]">Resumo do Evento</h3>
@@ -234,7 +235,7 @@ document.getElementById('downloadPdf').onclick = () => {
     stats[e.kind].people += e.people;
   });
 
-  doc.setFontSize(22); doc.text("CASA TERESA E JORGE", 105, 20, { align: "center" });
+  doc.setFontSize(22); doc.text("SEGUNDA SEM LEITE", 105, 20, { align: "center" });
   doc.setFontSize(10); doc.text(`RELATORIO DE FECHAMENTO - ${currentDate.split('-').reverse().join('/')}`, 105, 28, { align: "center" });
   doc.line(15, 32, 195, 32);
 
@@ -256,8 +257,10 @@ document.getElementById('downloadPdf').onclick = () => {
     currentY += 10;
   });
 
-  doc.save(`Fechamento_${currentDate}.pdf`);
+  doc.save(`Fechamento_SSL_${currentDate}.pdf`);
 };
+
+function toggleBlur() { isValueVisible = !isValueVisible; document.getElementById('eyeIcon').textContent = isValueVisible ? '👁️' : '🙈'; render(); }
 
 document.getElementById('resetDay').onclick = () => { if(confirm('Zerar hoje?')) { entries=[]; localStorage.removeItem(`ctj_final_${currentDate}`); render(); } };
 const dateEl = document.getElementById('currentDate');
