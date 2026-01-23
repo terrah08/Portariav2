@@ -49,9 +49,9 @@
           <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 relative text-center">
             <div class="flex justify-between items-center px-2">
               <div class="text-[10px] text-blue-600 font-bold uppercase">Caixa Total</div>
-              <button onclick="toggleBlur()" class="text-sm"> <span id="eyeIcon">👁️</span> </button>
+              <button onclick="toggleBlur()" class="text-sm focus:outline-none"> <span id="eyeIcon">👁️</span> </button>
             </div>
-            <div id="totalCollected" class="text-4xl font-black text-blue-900">R$ 0,00</div>
+            <div id="totalCollected" class="text-4xl font-black text-blue-900 transition-all">R$ 0,00</div>
           </div>
         </div>
 
@@ -119,6 +119,12 @@ let isValueVisible = true;
 let chartInstance = null;
 let currentDate = new Date().toISOString().slice(0,10);
 
+function toggleBlur() { 
+  isValueVisible = !isValueVisible; 
+  document.getElementById('eyeIcon').textContent = isValueVisible ? '👁️' : '🙈'; 
+  render(); 
+}
+
 function renderButtons() {
   const container = document.getElementById('buttonsContainer');
   container.innerHTML = '';
@@ -154,18 +160,29 @@ function load() {
 function render() {
   renderButtons();
   const body = document.getElementById('entriesBody');
-  const blurClass = isValueVisible ? '' : 'hidden-value';
+  
+  // Tabela sempre visível
   body.innerHTML = entries.map(e => `
     <tr class="hover:bg-gray-50 border-b border-gray-50">
       <td class="p-3 text-gray-400 font-mono">${e.time}</td>
       <td class="p-3 font-bold text-gray-700 uppercase text-[10px]">${e.type}</td>
-      <td class="p-3 text-right font-black ${blurClass}">R$ ${e.price.toFixed(2)}</td>
+      <td class="p-3 text-right font-black">R$ ${e.price.toFixed(2)}</td>
       <td class="p-3 text-center"><button onclick="deleteEntry(${e.id})" class="text-red-200 hover:text-red-500">✕</button></td>
     </tr>
   `).join('');
+
   const totals = entries.reduce((a, b) => ({ p: a.p + b.people, v: a.v + b.price }), { p: 0, v: 0 });
   document.getElementById('totalPeople').textContent = totals.p;
-  document.getElementById('totalCollected').textContent = `R$ ${totals.v.toFixed(2)}`;
+  
+  // Ocultar apenas o Caixa Total
+  const totalCollectedEl = document.getElementById('totalCollected');
+  totalCollectedEl.textContent = `R$ ${totals.v.toFixed(2)}`;
+  
+  if (!isValueVisible) {
+    totalCollectedEl.classList.add('hidden-value');
+  } else {
+    totalCollectedEl.classList.remove('hidden-value');
+  }
 }
 
 function addEntry(p) {
@@ -193,7 +210,6 @@ document.getElementById('btnOpenReport').onclick = () => {
   const first = times.length > 0 ? new Date(times[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
   const last = times.length > 0 ? new Date(times[times.length-1]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "--:--";
 
-  // AJUSTE: Ticket Médio e Caixa na mesma linha usando flexbox
   document.getElementById('reportSummary').innerHTML = `
     <h3 class="font-black text-emerald-700 uppercase text-[10px] mb-2 tracking-widest">Resumo do Horário</h3>
     <div class="flex justify-between text-xs py-1"><span>Primeira Entrada:</span><b>${first}</b></div>
@@ -260,7 +276,6 @@ document.getElementById('downloadPdf').onclick = () => {
     currentY += 10;
   });
 
-  // ADICIONAR O GRÁFICO AO PDF
   const canvas = document.getElementById('reportChart');
   if (canvas) {
     const imgData = canvas.toDataURL('image/png', 1.0);
@@ -270,7 +285,6 @@ document.getElementById('downloadPdf').onclick = () => {
   doc.save(`Fechamento_SSL_${currentDate}.pdf`);
 };
 
-function toggleBlur() { isValueVisible = !isValueVisible; document.getElementById('eyeIcon').textContent = isValueVisible ? '👁️' : '🙈'; render(); }
 document.getElementById('resetDay').onclick = () => { if(confirm('Zerar hoje?')) { entries=[]; localStorage.removeItem(`ctj_final_${currentDate}`); render(); } };
 const dateEl = document.getElementById('currentDate');
 dateEl.value = currentDate;
