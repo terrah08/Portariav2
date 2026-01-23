@@ -83,7 +83,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div id="reportSummary" class="bg-gray-50 p-5 rounded-2xl border space-y-3"></div>
           <div class="space-y-4">
-             <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest border-b pb-1">Pessoas por Categoria</h3>
+             <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest border-b pb-1">Divisão Detalhada</h3>
              <div id="reportTotals" class="space-y-1"></div>
           </div>
           <div id="chartWrapper">
@@ -100,12 +100,12 @@ const PRICE_TYPES = [
   { id: "20_din", label: "Dinheiro R$20", sub: "Individual", price: 20, people: 1, kind: "Dinheiro" },
   { id: "30_din", label: "Dinheiro R$30", sub: "Individual", price: 30, people: 1, kind: "Dinheiro" },
   { id: "50_din", label: "Dinheiro R$50", sub: "Dupla", price: 50, people: 2, kind: "Dinheiro" },
-  { id: "20_cred", label: "R$20 - Crédito", sub: "Individual", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_cred", label: "R$30 - Crédito", sub: "Individual", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_cred", label: "R$50 - Crédito", sub: "Dupla", price: 50, people: 2, kind: "Cartão" },
-  { id: "20_debt", label: "R$20 - Débito", sub: "Individual", price: 20, people: 1, kind: "Cartão" },
-  { id: "30_debt", label: "R$30 - Débito", sub: "Individual", price: 30, people: 1, kind: "Cartão" },
-  { id: "50_debt", label: "R$50 - Débito", sub: "Dupla", price: 50, people: 2, kind: "Cartão" },  
+  { id: "20_cred", label: "R$20 - Crédito", sub: "Individual", price: 20, people: 1, kind: "Crédito" },
+  { id: "30_cred", label: "R$30 - Crédito", sub: "Individual", price: 30, people: 1, kind: "Crédito" },
+  { id: "50_cred", label: "R$50 - Crédito", sub: "Dupla", price: 50, people: 2, kind: "Crédito" },
+  { id: "20_debt", label: "R$20 - Débito", sub: "Individual", price: 20, people: 1, kind: "Débito" },
+  { id: "30_debt", label: "R$30 - Débito", sub: "Individual", price: 30, people: 1, kind: "Débito" },
+  { id: "50_debt", label: "R$50 - Débito", sub: "Dupla", price: 50, people: 2, kind: "Débito" },  
   { id: "20_pix", label: "Pix R$20", sub: "Individual", price: 20, people: 1, kind: "Pix" },
   { id: "30_pix", label: "Pix R$30", sub: "Individual", price: 30, people: 1, kind: "Pix" },
   { id: "50_pix", label: "Pix R$50", sub: "Dupla", price: 50, people: 2, kind: "Pix" },
@@ -123,7 +123,6 @@ let currentDate = new Date().toISOString().slice(0,10);
 function renderButtons() {
   const container = document.getElementById('buttonsContainer');
   container.innerHTML = '';
-  // Agora filtra corretamente pelo nome "50 Pessoas"
   const countFree = entries.filter(e => e.type.includes("50 Pessoas")).length;
 
   PRICE_TYPES.forEach(p => {
@@ -137,7 +136,14 @@ function renderButtons() {
         if (rest <= 0) disabled = true;
     }
 
-    b.className = `p-2 h-14 rounded-lg text-white flex flex-col items-center justify-center transition-all ${disabled ? 'btn-disabled' : (p.kind === 'Dinheiro' ? 'bg-green-600' : p.kind === 'Cartão' ? 'bg-amber-500' : p.kind === 'Pix' ? 'bg-cyan-600' : 'bg-gray-400')}`;
+    // Lógica de cores atualizada
+    let bgColor = 'bg-gray-400';
+    if (p.kind === 'Dinheiro') bgColor = 'bg-green-600';
+    if (p.kind === 'Crédito') bgColor = 'bg-yellow-500'; // Amarelo para Crédito
+    if (p.kind === 'Débito') bgColor = 'bg-orange-600'; // Diferenciação para Débito
+    if (p.kind === 'Pix') bgColor = 'bg-cyan-600';
+
+    b.className = `p-2 h-14 rounded-lg text-white flex flex-col items-center justify-center transition-all ${disabled ? 'btn-disabled' : bgColor}`;
     let subHtml = p.sub || p.isCounter ? `<span class="text-[9px] mt-1 font-black bg-black/20 px-2 rounded-full border border-white/10">${sub}</span>` : "";
     b.innerHTML = `<span class="text-[10px] font-black uppercase leading-none">${p.label}</span>${subHtml}`;
     if (!disabled) b.onclick = () => addEntry(p);
@@ -217,7 +223,13 @@ document.getElementById('btnOpenReport').onclick = () => {
   if(chartInstance) chartInstance.destroy();
   chartInstance = new Chart(document.getElementById('reportChart'), {
     type: 'doughnut',
-    data: { labels: Object.keys(stats), datasets: [{ data: Object.values(stats).map(v => v.money), backgroundColor: ['#10b981', '#f59e0b', '#06b6d4', '#cbd5e1'] }] },
+    data: { 
+        labels: Object.keys(stats), 
+        datasets: [{ 
+            data: Object.values(stats).map(v => v.money), 
+            backgroundColor: ['#16a34a', '#eab308', '#ea580c', '#0891b2', '#94a3b8'] 
+        }] 
+    },
     plugins: [ChartDataLabels],
     options: { responsive: true, animation: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9 } } }, datalabels: { color: '#000', font: { weight: 'bold', size: 9 }, formatter: v => v > 0 ? `R$${v.toFixed(0)}` : '' } } }
   });
@@ -246,7 +258,7 @@ document.getElementById('downloadPdf').onclick = () => {
   doc.text(`Valor Total Arrecadado: R$ ${totals.v.toFixed(2)}`, 15, 62);
   
   doc.setFont(undefined, 'bold');
-  doc.text("DETALHAMENTO POR CATEGORIA:", 15, 75);
+  doc.text("DETALHAMENTO DETALHADO:", 15, 75);
   let currentY = 85;
   Object.entries(stats).forEach(([k, v]) => {
     doc.setFont(undefined, 'bold');
