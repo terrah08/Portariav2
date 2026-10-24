@@ -97,7 +97,6 @@
 <script>
 const PRICE_TYPES = [
   { id: "20_din", label: "Dinheiro R$20", sub: "Individual", price: 20, people: 1, kind: "Dinheiro" },
-   { id: "13_din", label: "Dinheiro R$13", sub: "Individual", price: 13⭐️, people: 1, kind: "Dinheiro" },
   { id: "30_din", label: "Dinheiro R$30", sub: "Individual", price: 30, people: 1, kind: "Dinheiro" },
   { id: "50_din", label: "Dinheiro R$50", sub: "Dupla", price: 50, people: 2, kind: "Dinheiro" },
   { id: "20_cred", label: "R$20 - Crédito", sub: "Individual", price: 20, people: 1, kind: "Crédito" },
@@ -140,7 +139,7 @@ function renderButtons() {
         if (rest <= 0) disabled = true;
     }
     let bgColor = 'bg-gray-400';
-    if (p.kind === 'Dinheiro') bgColor = 'bg-red-600';
+    if (p.kind === 'Dinheiro') bgColor = 'bg-green-600';
     if (p.kind === 'Crédito') bgColor = 'bg-yellow-500';
     if (p.kind === 'Débito') bgColor = 'bg-orange-600';
     if (p.kind === 'Pix') bgColor = 'bg-cyan-600';
